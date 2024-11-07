@@ -1,2 +1,2 @@
-# TalkALot
-TalkALot is a real-time chatting appliction build using MERN Stack.
+# Talks
+Talks is a real-time chatting application built using MERN Stack.
