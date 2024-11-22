@@ -10,3 +10,7 @@ dist
 package.json
 package-lock.json
 *.config.js
+
+# Ignore Local Environment Variable files
+.env
+.env.sample

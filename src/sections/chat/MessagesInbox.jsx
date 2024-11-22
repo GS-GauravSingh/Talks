@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import commonStyles from "../../commonStyles";
 import user_01 from "../../assets/userImages/user_01.png";
 import {
@@ -9,9 +9,15 @@ import {
     PaperPlaneTilt,
     Smiley,
 } from "@phosphor-icons/react";
-import { Dropdown, MessageBox } from "../../components";
+import { Dropdown, MessageBox, EmojiPicker, GIF } from "../../components";
 
 function MessagesInbox() {
+    const [showGif, setShowGif] = useState(false);
+    function handleToggleGifInput(event) {
+        event.preventDefault();
+        setShowGif((prev) => !prev);
+    }
+
     return (
         <div className={`h-full w-3/4 flex flex-col`}>
             {/* Header */}
@@ -61,7 +67,11 @@ function MessagesInbox() {
                             <Microphone size={20} weight="regular" />
                         </button>
 
-                        <button className="hover:text-primary">
+                        {/* GIF Component */}
+                        <button
+                            className="hover:text-primary"
+                            onClick={handleToggleGifInput}
+                        >
                             <Gif size={20} weight="regular" />
                         </button>
 
@@ -69,9 +79,8 @@ function MessagesInbox() {
                             <LinkSimple size={20} weight="regular" />
                         </button>
 
-                        <button className="hover:text-primary ">
-                            <Smiley size={20} weight="regular" />
-                        </button>
+                        {/* Emoji Picker Component */}
+                        <EmojiPicker />
                     </div>
                 </div>
 
@@ -79,6 +88,11 @@ function MessagesInbox() {
                     <PaperPlaneTilt size={24} weight="bold" />
                 </button>
             </form>
+
+            {/* GIF Component */}
+            {
+                showGif && <GIF />
+            }
         </div>
     );
 }

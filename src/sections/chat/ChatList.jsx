@@ -126,8 +126,6 @@ function ChatList() {
         },
     ];
 
-    console.log(users);
-
     return (
         <div
             className={`${commonStyles.bodyBackground}  ${commonStyles.borderLeft} ${commonStyles.borderRight} flex flex-col h-full max-h-full w-1/4 overflow-auto`}

@@ -1,4 +1,6 @@
 import ThemeSwitcher from "./ThemeSwitcher";
 import MessageBox from "./MessageBox";
 import Dropdown from "./Dropdown";
-export { ThemeSwitcher, MessageBox, Dropdown };
+import EmojiPicker from "./EmojiPicker";
+import GIF from "./GIF";
+export { ThemeSwitcher, MessageBox, Dropdown, EmojiPicker, GIF };
