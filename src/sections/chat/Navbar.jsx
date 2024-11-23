@@ -11,7 +11,6 @@ import {
 import { ThemeSwitcher } from "../../components";
 
 function Navbar() {
-
     const [active, setActive] = useState(0);
     const navigation = [
         {
@@ -56,8 +55,11 @@ function Navbar() {
                 {navigation.map((navItem, index) => {
                     return (
                         <div
+                            key={index}
                             className={`flex flex-col justify-center items-center cursor-pointer gap-1 group`}
-                            onClick={() => {setActive(index)}}
+                            onClick={() => {
+                                setActive(index);
+                            }}
                         >
                             <span
                                 className={`${commonStyles.border} p-2 rounded-md group-hover:bg-primary group-hover:border-primary group-hover:text-white ${active === index && `bg-primary !border-primary text-white`}`}
@@ -65,7 +67,9 @@ function Navbar() {
                                 {navItem.icon}
                             </span>
 
-                            <h4 className={`text-sm group-hover:text-primary font-medium ${active === index && `text-primary`}`}>
+                            <h4
+                                className={`text-sm group-hover:text-primary font-medium ${active === index && `text-primary`}`}
+                            >
                                 {navItem.title}
                             </h4>
                         </div>
@@ -77,10 +81,11 @@ function Navbar() {
             <div className="flex-grow"></div>
 
             <div className="flex flex-col items-center justify-center gap-2">
-
                 <ThemeSwitcher />
 
-                <span className={`p-2 rounded-md cursor-pointer border-warning bg-warning text-white  hover:opacity-95 dark:hover:opacity-80`}>
+                <span
+                    className={`p-2 rounded-md cursor-pointer border-warning bg-warning text-white  hover:opacity-95 dark:hover:opacity-80`}
+                >
                     <SignOut size={24} weight="regular" />
                 </span>
             </div>

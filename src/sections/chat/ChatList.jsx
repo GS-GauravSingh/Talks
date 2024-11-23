@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import commonStyles from "../../commonStyles";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import user_01 from "../../assets/userImages/user_01.png";
@@ -23,6 +23,8 @@ import user_19 from "../../assets/userImages/user_19.png";
 import user_20 from "../../assets/userImages/user_20.png";
 
 function ChatList() {
+
+    const [active, setActive] = useState(null)
     const users = [
         {
             name: "Aarav Sharma",
@@ -158,13 +160,14 @@ function ChatList() {
             </form>
 
             {/* Chat List */}
-            <div className="pb-2 max-h-full overflow-auto no-scrollbar">
+            <div className="pb-4 max-h-full overflow-auto no-scrollbar">
                 {/* JavaScript */}
                 {users.map((user, index) => {
                     return (
                         <div
                             key={index}
-                            className={`flex items-center gap-4 cursor-pointer hover:bg-lightGray dark:hover:bg-gunmetalGray py-2 px-4 rounded-sm`}
+                            className={`${active === index && "!bg-primary !text-white"} flex items-center gap-4 cursor-pointer hover:bg-lightGray dark:hover:bg-gunmetalGray py-2 px-4 rounded-sm`}
+                            onClick={() => setActive(index)}
                         >
                             <img
                                 src={user.imageUrl}

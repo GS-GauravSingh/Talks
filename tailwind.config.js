@@ -16,7 +16,8 @@ export default {
         "darkGray": "#1A1110",
         "primary": "#008080",
         "warning": "#CE2029",
-        "warningLight": "#ED2939"
+        "warningLight": "#ED2939",
+        "smokyBlack": "#100C08"
       },
 
       fontFamily: {

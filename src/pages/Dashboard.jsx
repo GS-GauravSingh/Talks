@@ -1,6 +1,7 @@
 import React from "react";
 import commonStyles from "../commonStyles";
 import { Navbar, ChatList, MessagesInbox } from "../sections";
+import { GifModel } from "../components";
 
 function Dashboard() {
     return (
@@ -16,6 +17,9 @@ function Dashboard() {
 
                 {/* Message Inbox */}
                 <MessagesInbox />
+
+                {/* GIF Model - Popup opens when user clicks on any particular GIF. */}
+                <GifModel />
             </div>
         </div>
     );

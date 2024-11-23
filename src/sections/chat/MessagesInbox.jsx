@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import commonStyles from "../../commonStyles";
 import user_01 from "../../assets/userImages/user_01.png";
 import {
@@ -13,6 +13,7 @@ import { Dropdown, MessageBox, EmojiPicker, GIF } from "../../components";
 
 function MessagesInbox() {
     const [showGif, setShowGif] = useState(false);
+    const gifTriggerRef = useRef(null);
     function handleToggleGifInput(event) {
         event.preventDefault();
         setShowGif((prev) => !prev);
@@ -69,6 +70,7 @@ function MessagesInbox() {
 
                         {/* GIF Component */}
                         <button
+                            ref={gifTriggerRef}
                             className="hover:text-primary"
                             onClick={handleToggleGifInput}
                         >
@@ -90,9 +92,7 @@ function MessagesInbox() {
             </form>
 
             {/* GIF Component */}
-            {
-                showGif && <GIF />
-            }
+            {showGif && <GIF />}
         </div>
     );
 }

@@ -8,9 +8,13 @@ import React, {
 import commonStyles from "../commonStyles";
 import { Grid } from "@giphy/react-components";
 import { GiphyFetch } from "@giphy/js-fetch-api";
+import { useDispatch, useSelector } from "react-redux";
+import { updateGifModel } from "../redux/slices/appSlice";
 
 function GIF() {
+    const dispatch = useDispatch();
     const containerRef = useRef(null);
+    const gridRef = useRef(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [gridWidth, setGridWidth] = useState("");
 
@@ -32,6 +36,13 @@ function GIF() {
     // What happens when user clicks on any paticular GIF.
     const handleOnGifClick = (gif, event) => {
         event.preventDefault();
+        const gifUrl = gif.images.original.url;
+        dispatch(
+            updateGifModel({
+                show: true,
+                url: gifUrl,
+            })
+        );
     };
 
     // Debounce Functionality
@@ -61,7 +72,7 @@ function GIF() {
                 }}
             />
 
-            <div className="h-40 overflow-auto no-scrollbar">
+            <div ref={gridRef} className="h-40 overflow-auto no-scrollbar">
                 <Grid
                     width={gridWidth}
                     columns={8}
