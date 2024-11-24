@@ -7,6 +7,7 @@ import { updateGifModel } from "../redux/slices/appSlice";
 function GifModel() {
     const dispatch = useDispatch();
     const gifRedux = useSelector((state) => state.appReducers.models.gif);
+    const containerRef = useRef(null);
 
     // Function to send Gif
     function handleSendGif(event) {
@@ -24,8 +25,28 @@ function GifModel() {
         );
     }
 
+    // Close the gif model when user click on the ESC key.
+    useEffect(() => {
+        const keyHandler = ({ keyCode }) => {
+            if (!gifRedux.show || keyCode !== 27) {
+                return;
+            }
+
+            dispatch(
+                updateGifModel({
+                    show: false,
+                    url: "",
+                })
+            );
+        };
+
+        document.addEventListener("keydown", keyHandler);
+        return () => document.removeEventListener("keydown", keyHandler);
+    });
+
     return (
         <div
+            ref={containerRef}
             className={`${gifRedux.show ? "block" : "hidden"} fixed top-0 h-full min-h-screen w-full bg-black/90 z-999999 flex items-center justify-center px-4 py-5`}
         >
             <div className="bg-white dark:bg-smokyBlack w-full max-w-md px-10 py-8 rounded-md space-y-4">

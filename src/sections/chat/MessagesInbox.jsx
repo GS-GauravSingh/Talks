@@ -10,13 +10,21 @@ import {
     Smiley,
 } from "@phosphor-icons/react";
 import { Dropdown, MessageBox, EmojiPicker, GIF } from "../../components";
+import { useDispatch } from "react-redux";
+import { updateVoiceRecorderModel } from "../../redux/slices/appSlice";
 
 function MessagesInbox() {
+    const dispatch = useDispatch();
     const [showGif, setShowGif] = useState(false);
-    const gifTriggerRef = useRef(null);
+
     function handleToggleGifInput(event) {
         event.preventDefault();
         setShowGif((prev) => !prev);
+    }
+
+    function handleToggleVoiceRecorder(event) {
+        event.preventDefault();
+        dispatch(updateVoiceRecorderModel({ show: true }));
     }
 
     return (
@@ -64,13 +72,14 @@ function MessagesInbox() {
                     />
 
                     <div className="flex items-center gap-2 absolute top-1/2 -translate-y-1/2 right-4">
-                        <button className="hover:text-primary">
+                        <button
+                            className="hover:text-primary"
+                            onClick={handleToggleVoiceRecorder}
+                        >
                             <Microphone size={20} weight="regular" />
                         </button>
 
-                        {/* GIF Component */}
                         <button
-                            ref={gifTriggerRef}
                             className="hover:text-primary"
                             onClick={handleToggleGifInput}
                         >

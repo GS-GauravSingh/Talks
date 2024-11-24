@@ -1,7 +1,7 @@
 import React from "react";
 import commonStyles from "../commonStyles";
 import { Navbar, ChatList, MessagesInbox } from "../sections";
-import { GifModel } from "../components";
+import { GifModel, VoiceRecorderModel } from "../components";
 
 function Dashboard() {
     return (
@@ -20,6 +20,9 @@ function Dashboard() {
 
                 {/* GIF Model - Popup opens when user clicks on any particular GIF. */}
                 <GifModel />
+
+                {/* Voice Recorder Model - Popup opens when user clicks on Microphone button. */}
+                <VoiceRecorderModel />
             </div>
         </div>
     );
