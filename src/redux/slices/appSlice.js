@@ -10,6 +10,14 @@ const initialState = {
         voiceRecorder: {
             show: false,
         },
+
+        mediaUpload: {
+            show: false,
+        },
+
+        documentUpload: {
+            show: false,
+        },
     },
 };
 
@@ -32,8 +40,18 @@ const appSlice = createSlice({
         updateVoiceRecorderModel: (state, action) => {
             state.models.voiceRecorder.show = action.payload.show;
         },
+
+        // reducer function to update the 'show'  property of mediaUpload model (i.e., state.models.mediaUpload.show).
+        updateMediaUploadModel: (state, action) => {
+            state.models.mediaUpload.show = action.payload.show;
+        },
+
+        // reducer function to update the 'show'  property of documentUpload model (i.e., state.models.documentUpload.show).
+        updateDocumentUploadModel: (state, action) => {
+            state.models.documentUpload.show = action.payload.show;
+        },
     },
 });
 
-export const { updateGifModel, updateVoiceRecorderModel } = appSlice.actions;
+export const { updateGifModel, updateVoiceRecorderModel, updateMediaUploadModel, updateDocumentUploadModel } = appSlice.actions;
 export default appSlice.reducer;

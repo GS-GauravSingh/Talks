@@ -9,7 +9,7 @@ import {
     PaperPlaneTilt,
     Smiley,
 } from "@phosphor-icons/react";
-import { Dropdown, MessageBox, EmojiPicker, GIF } from "../../components";
+import { Dropdown, MessageBox, EmojiPicker, GIF, MediaUploadPopup } from "../../components";
 import { useDispatch } from "react-redux";
 import { updateVoiceRecorderModel } from "../../redux/slices/appSlice";
 
@@ -86,9 +86,8 @@ function MessagesInbox() {
                             <Gif size={20} weight="regular" />
                         </button>
 
-                        <button className="hover:text-primary">
-                            <LinkSimple size={20} weight="regular" />
-                        </button>
+                        {/* Media Upload Component */}
+                        <MediaUploadPopup />
 
                         {/* Emoji Picker Component */}
                         <EmojiPicker />
