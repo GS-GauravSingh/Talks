@@ -130,7 +130,7 @@ function ChatList() {
 
     return (
         <div
-            className={`${commonStyles.bodyBackground}  ${commonStyles.borderLeft} ${commonStyles.borderRight} flex flex-col h-full max-h-full w-1/4 overflow-auto`}
+            className={`${commonStyles.bodyBackground}  ${commonStyles.borderLeft} ${commonStyles.borderRight} flex flex-col h-full min-w-[25%] max-w-[25%] overflow-auto`}
         >
             {/* Header */}
             <div

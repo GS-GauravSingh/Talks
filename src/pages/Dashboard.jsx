@@ -7,7 +7,7 @@ function Dashboard() {
     return (
         <div className="h-screen overflow-hidden">
             <div
-                className={`${commonStyles.bodyBackground} ${commonStyles.border} !border h-full flex flex-row`}
+                className={`${commonStyles.bodyBackground} ${commonStyles.border} !border h-full w-full flex flex-row`}
             >
                 {/* Navbar */}
                 <Navbar />
