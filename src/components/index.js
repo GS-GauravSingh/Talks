@@ -10,5 +10,6 @@ import MediaUploadModel from "./MediaUploadModel";
 import DocumentUploadModel from "./DocumentUploadModel";
 import FileDropzone from "./FileDropzone";
 import MessageSeparator from "./MessageSeparator"
+import TypingIndicator from "./TypingIndicator";
 
-export { ThemeSwitcher, MessageBox, Dropdown, EmojiPicker, GIF, GifModel, VoiceRecorderModel, MediaUploadPopup, MediaUploadModel, DocumentUploadModel, FileDropzone, MessageSeparator };
+export { ThemeSwitcher, MessageBox, Dropdown, EmojiPicker, GIF, GifModel, VoiceRecorderModel, MediaUploadPopup, MediaUploadModel, DocumentUploadModel, FileDropzone, MessageSeparator, TypingIndicator };

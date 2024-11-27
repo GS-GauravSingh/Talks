@@ -1,5 +1,5 @@
 /* Google Font - Inter */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -7,13 +7,12 @@
 
 @layer base {
     body {
-        @apply font-inter font-normal text-base text-gray 
+        @apply font-inter font-normal text-base text-gray;
     }
 }
 
 @layer utilities {
     .no-scrollbar {
-
         /* IE and Edge */
         -ms-overflow-style: none;
 
@@ -25,4 +24,38 @@
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }
+}
+
+/* Typing Indicator Animation */
+@keyframes typingIndicatorAnimation {
+    0%{
+        transform: translateY(0);
+    }
+    
+    35%{
+        transform: translateY(-5px);
+    }
+    
+    70%, 100%{
+        transform: translateY(0px);
+    }
+}
+
+.typing-indicator-dot{
+    animation-name: typingIndicatorAnimation;
+    animation-duration: 1.5s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+.typing-indicator-dot:nth-child(1){
+    animation-delay: 200ms;
+}
+
+.typing-indicator-dot:nth-child(2){
+    animation-delay: 300ms;
+}
+
+.typing-indicator-dot:nth-child(3){
+    animation-delay: 400ms;
 }

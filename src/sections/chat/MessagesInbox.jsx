@@ -16,6 +16,7 @@ import {
     GIF,
     MediaUploadPopup,
     MessageSeparator,
+    TypingIndicator,
 } from "../../components";
 import { useDispatch } from "react-redux";
 import { updateVoiceRecorderModel } from "../../redux/slices/appSlice";
@@ -76,6 +77,8 @@ function MessagesInbox() {
                     <MessageBox key={2} type="send" />
                     <MessageBox key={3} type="received" />
                     <MessageBox key={4} type="send" />
+
+                    <TypingIndicator />
                 </div>
 
                 {/* Input */}
