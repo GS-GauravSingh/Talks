@@ -15,6 +15,7 @@ import {
     EmojiPicker,
     GIF,
     MediaUploadPopup,
+    MessageSeparator,
 } from "../../components";
 import { useDispatch } from "react-redux";
 import { updateVoiceRecorderModel } from "../../redux/slices/appSlice";
@@ -71,6 +72,7 @@ function MessagesInbox() {
                 {/* Messages */}
                 <div className="flex-grow flex flex-col gap-4 px-4 h-full overflow-auto no-scrollbar my-4">
                     <MessageBox key={1} type="received" />
+                    <MessageSeparator />
                     <MessageBox key={2} type="send" />
                     <MessageBox key={3} type="received" />
                     <MessageBox key={4} type="send" />
@@ -117,9 +119,9 @@ function MessagesInbox() {
                 {showGif && <GIF />}
             </div>
 
-            {
-                showUserProfile && <Profile setShowUserProfile={setShowUserProfile} />
-            }
+            {showUserProfile && (
+                <Profile setShowUserProfile={setShowUserProfile} />
+            )}
         </>
     );
 }

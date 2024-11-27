@@ -9,5 +9,6 @@ import MediaUploadPopup from "./MediaUploadPopup";
 import MediaUploadModel from "./MediaUploadModel";
 import DocumentUploadModel from "./DocumentUploadModel";
 import FileDropzone from "./FileDropzone";
+import MessageSeparator from "./MessageSeparator"
 
-export { ThemeSwitcher, MessageBox, Dropdown, EmojiPicker, GIF, GifModel, VoiceRecorderModel, MediaUploadPopup, MediaUploadModel, DocumentUploadModel, FileDropzone };
+export { ThemeSwitcher, MessageBox, Dropdown, EmojiPicker, GIF, GifModel, VoiceRecorderModel, MediaUploadPopup, MediaUploadModel, DocumentUploadModel, FileDropzone, MessageSeparator };
