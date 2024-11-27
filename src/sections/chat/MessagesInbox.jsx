@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import {
     Dropdown,
-    MessageBox,
+    TextMessage,
     EmojiPicker,
     GIF,
     MediaUploadPopup,
@@ -72,11 +72,37 @@ function MessagesInbox() {
 
                 {/* Messages */}
                 <div className="flex-grow flex flex-col gap-4 px-4 h-full overflow-auto no-scrollbar my-4">
-                    <MessageBox key={1} type="received" />
+                    <TextMessage
+                        key={1}
+                        incoming={true}
+                        author="Ishika Verma"
+                        timestamp="2:00 pm"
+                        content="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et aliquam deserunt incidunt magnam veniam pariatur provident assumenda delectus voluptates voluptas. https://www.npmjs.com/"
+                    />
+                    
                     <MessageSeparator />
-                    <MessageBox key={2} type="send" />
-                    <MessageBox key={3} type="received" />
-                    <MessageBox key={4} type="send" />
+
+                    <TextMessage
+                        key={2}
+                        incoming={false}
+                        timestamp="2:00 pm"
+                        content="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et aliquam deserunt incidunt magnam veniam pariatur provident assumenda delectus voluptates voluptas. https://www.npmjs.com/"
+                    />
+
+                    <TextMessage
+                        key={3}
+                        incoming={true}
+                        author="Ishika Verma"
+                        timestamp="2:00 pm"
+                        content="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et aliquam deserunt incidunt magnam veniam pariatur provident assumenda delectus voluptates voluptas."
+                    />
+
+                    <TextMessage
+                        key={4}
+                        incoming={false}
+                        timestamp="2:00 pm"
+                        content="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et aliquam deserunt incidunt magnam veniam pariatur provident assumenda delectus voluptates voluptas."
+                    />
 
                     <TypingIndicator />
                 </div>

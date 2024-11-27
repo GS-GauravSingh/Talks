@@ -1,5 +1,5 @@
 import ThemeSwitcher from "./ThemeSwitcher";
-import MessageBox from "./MessageBox";
+import TextMessage from "./messages/TextMessage";
 import Dropdown from "./Dropdown";
 import EmojiPicker from "./EmojiPicker";
 import GIF from "./GIF";
@@ -12,4 +12,4 @@ import FileDropzone from "./FileDropzone";
 import MessageSeparator from "./MessageSeparator"
 import TypingIndicator from "./TypingIndicator";
 
-export { ThemeSwitcher, MessageBox, Dropdown, EmojiPicker, GIF, GifModel, VoiceRecorderModel, MediaUploadPopup, MediaUploadModel, DocumentUploadModel, FileDropzone, MessageSeparator, TypingIndicator };
+export { ThemeSwitcher, TextMessage, Dropdown, EmojiPicker, GIF, GifModel, VoiceRecorderModel, MediaUploadPopup, MediaUploadModel, DocumentUploadModel, FileDropzone, MessageSeparator, TypingIndicator };
