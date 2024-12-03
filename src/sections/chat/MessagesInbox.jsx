@@ -12,6 +12,7 @@ import {
 import {
     Dropdown,
     TextMessage,
+    DocumentMessage,
     EmojiPicker,
     GIF,
     MediaUploadPopup,
@@ -79,7 +80,7 @@ function MessagesInbox() {
                         timestamp="2:00 pm"
                         content="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et aliquam deserunt incidunt magnam veniam pariatur provident assumenda delectus voluptates voluptas. https://www.npmjs.com/"
                     />
-                    
+
                     <MessageSeparator />
 
                     <TextMessage
@@ -102,6 +103,19 @@ function MessagesInbox() {
                         incoming={false}
                         timestamp="2:00 pm"
                         content="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et aliquam deserunt incidunt magnam veniam pariatur provident assumenda delectus voluptates voluptas."
+                    />
+
+                    <DocumentMessage
+                        key={5}
+                        incoming={true}
+                        author="Ishika Verma"
+                        timestamp="3:00 pm"
+                    />
+
+                    <DocumentMessage
+                        key={6}
+                        incoming={false}
+                        timestamp="3:00 pm"
                     />
 
                     <TypingIndicator />
