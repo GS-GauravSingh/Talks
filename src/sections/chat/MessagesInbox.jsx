@@ -18,6 +18,7 @@ import {
     MediaUploadPopup,
     MessageSeparator,
     TypingIndicator,
+    VoiceMessage,
 } from "../../components";
 import { useDispatch } from "react-redux";
 import { updateVoiceRecorderModel } from "../../redux/slices/appSlice";
@@ -116,6 +117,19 @@ function MessagesInbox() {
                         key={6}
                         incoming={false}
                         timestamp="3:00 pm"
+                    />
+
+                    <VoiceMessage
+                        key={7}
+                        incoming={true}
+                        author="Ishika Verma"
+                        timestamp="4:00 pm"
+                    />
+
+                    <VoiceMessage
+                        key={7}
+                        incoming={false}
+                        timestamp="4:00 pm"
                     />
 
                     <TypingIndicator />
