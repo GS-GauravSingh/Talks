@@ -19,6 +19,7 @@ import {
     MessageSeparator,
     TypingIndicator,
     VoiceMessage,
+    MediaMessage,
 } from "../../components";
 import { useDispatch } from "react-redux";
 import { updateVoiceRecorderModel } from "../../redux/slices/appSlice";
@@ -75,7 +76,6 @@ function MessagesInbox() {
                 {/* Messages */}
                 <div className="flex-grow flex flex-col gap-4 px-4 h-full overflow-auto no-scrollbar my-4">
                     <TextMessage
-                        key={1}
                         incoming={true}
                         author="Ishika Verma"
                         timestamp="2:00 pm"
@@ -85,14 +85,12 @@ function MessagesInbox() {
                     <MessageSeparator />
 
                     <TextMessage
-                        key={2}
                         incoming={false}
                         timestamp="2:00 pm"
                         content="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et aliquam deserunt incidunt magnam veniam pariatur provident assumenda delectus voluptates voluptas. https://www.npmjs.com/"
                     />
 
                     <TextMessage
-                        key={3}
                         incoming={true}
                         author="Ishika Verma"
                         timestamp="2:00 pm"
@@ -100,36 +98,40 @@ function MessagesInbox() {
                     />
 
                     <TextMessage
-                        key={4}
                         incoming={false}
                         timestamp="2:00 pm"
                         content="Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et aliquam deserunt incidunt magnam veniam pariatur provident assumenda delectus voluptates voluptas."
                     />
 
                     <DocumentMessage
-                        key={5}
                         incoming={true}
                         author="Ishika Verma"
                         timestamp="3:00 pm"
                     />
 
-                    <DocumentMessage
-                        key={6}
-                        incoming={false}
-                        timestamp="3:00 pm"
-                    />
+                    <DocumentMessage incoming={false} timestamp="3:00 pm" />
 
                     <VoiceMessage
-                        key={7}
                         incoming={true}
                         author="Ishika Verma"
                         timestamp="4:00 pm"
                     />
 
-                    <VoiceMessage
-                        key={7}
+                    <VoiceMessage incoming={false} timestamp="4:00 pm" />
+
+                    <MediaMessage
+                        incoming={true}
+                        author="Ishika Verma"
+                        timestamp="5:00 pm"
+                        assets={[]}
+                        caption="Lorem ipsum dolor, sit amet consectetur adipisicing elit."
+                    />
+
+                    <MediaMessage
                         incoming={false}
-                        timestamp="4:00 pm"
+                        timestamp="5:00 pm"
+                        assets={[]}
+                        caption="Lorem ipsum dolor, sit amet consectetur adipisicing elit."
                     />
 
                     <TypingIndicator />
