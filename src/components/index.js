@@ -14,5 +14,7 @@ import DocumentUploadModel from "./DocumentUploadModel";
 import FileDropzone from "./FileDropzone";
 import MessageSeparator from "./MessageSeparator"
 import TypingIndicator from "./TypingIndicator";
+import AudioRoom from "./AudioRoom";
+import VideoRoom from "./VideoRoom";
 
-export { ThemeSwitcher, TextMessage, DocumentMessage, VoiceMessage, MediaMessage, Dropdown, EmojiPicker, GIF, GifModel, VoiceRecorderModel, MediaUploadPopup, MediaUploadModel, DocumentUploadModel, FileDropzone, MessageSeparator, TypingIndicator };
+export { ThemeSwitcher, TextMessage, DocumentMessage, VoiceMessage, MediaMessage, Dropdown, EmojiPicker, GIF, GifModel, VoiceRecorderModel, MediaUploadPopup, MediaUploadModel, DocumentUploadModel, FileDropzone, MessageSeparator, TypingIndicator, AudioRoom, VideoRoom };

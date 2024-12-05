@@ -7,7 +7,9 @@ import {
     LinkSimple,
     Microphone,
     PaperPlaneTilt,
+    Phone,
     Smiley,
+    VideoCamera,
 } from "@phosphor-icons/react";
 import {
     Dropdown,
@@ -20,6 +22,8 @@ import {
     TypingIndicator,
     VoiceMessage,
     MediaMessage,
+    VideoRoom,
+    AudioRoom,
 } from "../../components";
 import { useDispatch } from "react-redux";
 import { updateVoiceRecorderModel } from "../../redux/slices/appSlice";
@@ -29,6 +33,19 @@ function MessagesInbox() {
     const dispatch = useDispatch();
     const [showGif, setShowGif] = useState(false);
     const [showUserProfile, setShowUserProfile] = useState(false);
+    const [showAudioRoom, setShowAudioRoom] = useState(false);
+    const [showVideoRoom, setShowVideoRoom] = useState(false);
+
+    function handleToggleShowVideoRoom(event){
+        event.preventDefault();
+        setShowVideoRoom((prev) => !prev);
+        
+    }
+    function handleToggleShowAudioRoom(event){
+        event.preventDefault();
+        setShowAudioRoom((prev) => !prev);
+
+    }
 
     function handleToggleGifInput(event) {
         event.preventDefault();
@@ -69,8 +86,19 @@ function MessagesInbox() {
                         </div>
                     </div>
 
-                    {/* Dropdown Component */}
-                    <Dropdown />
+                    <div className="flex items-center space-x-8">
+
+                        <button className="hover:text-primary" onClick={handleToggleShowVideoRoom}>
+                            <VideoCamera size={24} weight="regular" />
+                        </button>
+
+                        <button className="hover:text-primary" onClick={handleToggleShowAudioRoom}>
+                            <Phone size={24} weight="regular" />
+                        </button>
+
+                        {/* Dropdown Component */}
+                        <Dropdown />
+                    </div>
                 </div>
 
                 {/* Messages */}
@@ -178,9 +206,20 @@ function MessagesInbox() {
                 {showGif && <GIF />}
             </div>
 
+            {/* User Profile Component */}
             {showUserProfile && (
                 <Profile setShowUserProfile={setShowUserProfile} />
             )}
+
+            {/* Video Room Component */}
+            {
+                showVideoRoom && <VideoRoom showVideoRoom={showVideoRoom} handleToggleShowVideoRoom={handleToggleShowVideoRoom} />
+            }
+
+            {/* Audio Room Component */}
+            {
+                showAudioRoom && <AudioRoom showAudioRoom={showAudioRoom} handleToggleShowAudioRoom={handleToggleShowAudioRoom} />
+            }
         </>
     );
 }
