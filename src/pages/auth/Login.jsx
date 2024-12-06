@@ -4,7 +4,7 @@ import googleSVG from "../../assets/svg/google-icon.svg";
 import commonStyles from "../../commonStyles";
 import { EnvelopeSimple, Eye } from "@phosphor-icons/react";
 import { EyeClosed } from "@phosphor-icons/react/dist/ssr";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);

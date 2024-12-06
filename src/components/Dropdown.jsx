@@ -57,7 +57,7 @@ function Dropdown() {
 
             <div
                 ref={dropdownRef}
-                className={`flex flex-col justify-center items-start gap-2 px-2 py-2 ${commonStyles.inputBackground} min-w-28 rounded-md absolute ${showDropdown ? "-translate-x-full opacity-100" : "translate-x-0 opacity-0"} transition duration-75 ease-linear`}
+                className={`flex flex-col justify-center items-start gap-2 px-2 py-2 ${commonStyles.inputBackground} min-w-28 rounded-md absolute z-999999 ${showDropdown ? "-translate-x-full opacity-100" : "translate-x-0 opacity-0"} transition duration-75 ease-linear`}
             >
                 <div className="flex gap-2 items-center cursor-pointer group">
                     <span className="group-hover:text-primary">

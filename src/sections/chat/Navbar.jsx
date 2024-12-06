@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import commonStyles from "../../commonStyles";
 import {
+    Chat,
     ChatDots,
     DotsThreeCircle,
     Shapes,
@@ -9,29 +10,32 @@ import {
     Users,
 } from "@phosphor-icons/react";
 import { ThemeSwitcher } from "../../components";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
-    const [active, setActive] = useState(0);
+    const navigate = useNavigate();
     const navigation = [
         {
             title: "DMs",
-            icon: <ChatDots size={24} weight="regular" />,
-        },
-
-        {
-            title: "Group",
-            icon: <Users size={24} weight="regular" />,
+            icon: <Chat size={24} weight="regular" />,
+            path: "/dashboard",
         },
 
         {
             title: "Profile",
             icon: <UserCircle size={24} weight="regular" />,
+            path: "/dashboard/profile",
         },
 
-        {
-            title: "More",
-            icon: <DotsThreeCircle size={24} weight="regular" />,
-        },
+        // {
+        //     title: "Group",
+        //     icon: <Users size={24} weight="regular" />,
+        // },
+
+        // {
+        //     title: "More",
+        //     icon: <DotsThreeCircle size={24} weight="regular" />,
+        // },
     ];
 
     return (
@@ -53,25 +57,28 @@ function Navbar() {
             <div className="flex flex-col justify-center items-center gap-2">
                 {/* JavaScript */}
                 {navigation.map((navItem, index) => {
+                    const path = window.location.pathname;
+                    let active = path === navItem.path;
+
                     return (
                         <div
                             key={index}
-                            className={`flex flex-col justify-center items-center cursor-pointer gap-1 group`}
+                            className={`flex flex-col justify-center items-center cursor-pointer group`}
                             onClick={() => {
-                                setActive(index);
+                                navigate(navItem.path);
                             }}
                         >
                             <span
-                                className={`${commonStyles.border} p-2 rounded-md group-hover:bg-primary group-hover:border-primary group-hover:text-white ${active === index && `bg-primary !border-primary text-white`}`}
+                                className={`${active && "text-white !border-primary !bg-primary"} ${commonStyles.border} p-2 rounded-md group-hover:bg-primary group-hover:border-primary group-hover:text-white `}
                             >
                                 {navItem.icon}
                             </span>
 
-                            <h4
-                                className={`text-sm group-hover:text-primary font-medium ${active === index && `text-primary`}`}
+                            <span
+                                className={`${active && "text-primary"} text-sm group-hover:text-primary font-medium pt-1`}
                             >
                                 {navItem.title}
-                            </h4>
+                            </span>
                         </div>
                     );
                 })}
@@ -83,11 +90,15 @@ function Navbar() {
             <div className="flex flex-col items-center justify-center gap-2">
                 <ThemeSwitcher />
 
-                <span
-                    className={`p-2 rounded-md cursor-pointer border-warning bg-warning text-white  hover:opacity-95 dark:hover:opacity-80`}
+                <button
+                    className={`p-2 rounded-md border-warning bg-warning text-white  hover:opacity-95 dark:hover:opacity-80`}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        navigate("/");
+                    }}
                 >
                     <SignOut size={24} weight="regular" />
-                </span>
+                </button>
             </div>
         </nav>
     );
