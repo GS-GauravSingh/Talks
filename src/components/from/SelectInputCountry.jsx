@@ -23,7 +23,7 @@ function SelectInputCountry() {
                         name=""
                         id=""
                         value={selectedCountry}
-                        className={`w-full h-full rounded-md outline-none pl-9 pr-9 appearance-none bg-transparent relative z-20 cursor-pointer`}
+                        className={`w-full h-full rounded-md outline-none pl-9 pr-9 appearance-none bg-transparent relative z-20 cursor-pointer group-focus-within:text-gunmetalGray dark:group-focus-within:text-white`}
                         onChange={(event) => {
                             setSelectedCountry(event.target.value);
                         }}
@@ -31,31 +31,31 @@ function SelectInputCountry() {
                         <option
                             value=""
                             disabled
-                            className="bg-gray dark:bg-gunmetalGray"
+                            className="bg-lightGray dark:bg-gunmetalGray"
                         >
                             Select Country
                         </option>
                         <option
                             value="India"
-                            className="bg-gray dark:bg-gunmetalGray"
+                            className="bg-lightGray dark:bg-gunmetalGray"
                         >
                             India
                         </option>
                         <option
                             value="United State"
-                            className="bg-gray dark:bg-gunmetalGray"
+                            className="bg-lightGray dark:bg-gunmetalGray"
                         >
                             United State
                         </option>
                         <option
                             value="United Kingdom"
-                            className="bg-gray dark:bg-gunmetalGray"
+                            className="bg-lightGray dark:bg-gunmetalGray"
                         >
                             United Kingdom
                         </option>
                         <option
                             value="Russia"
-                            className="bg-gray dark:bg-gunmetalGray"
+                            className="bg-lightGray dark:bg-gunmetalGray"
                         >
                             Russia
                         </option>

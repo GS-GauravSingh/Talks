@@ -22,13 +22,13 @@ function ProfileUpdateForm() {
                         <input
                             type={`${isCurrentVisible ? "text" : "password"}`}
                             placeholder="Enter current password"
-                            className={`${commonStyles.inputBackground} ${commonStyles.border} h-10 w-full pl-4 pr-12 text-sm rounded-md outline-none group-focus-within:border-primary text-gunmetalGray dark:text-white tracking-wide`}
+                            className={`${commonStyles.inputBackground} ${commonStyles.border} h-10 w-full pl-4 pr-12 text-sm rounded-md outline-none group-focus-within:border-primary group-focus-within:text-gunmetalGray dark:group-focus-within:text-white tracking-wide`}
                         />
                         <button
                             className="absolute top-1/2 -translate-y-1/2 right-4 group-focus-within:text-primary"
                             onClick={(e) => {
                                 e.preventDefault();
-                                setIsCurrentVisible((prev) => !prev)
+                                setIsCurrentVisible((prev) => !prev);
                             }}
                         >
                             {isCurrentVisible ? (
@@ -49,13 +49,13 @@ function ProfileUpdateForm() {
                         <input
                             type={`${isNewVisible ? "text" : "password"}`}
                             placeholder="Enter new password"
-                            className={`${commonStyles.inputBackground} ${commonStyles.border} h-10 w-full pl-4 pr-12 text-sm rounded-md outline-none group-focus-within:border-primary text-gunmetalGray dark:text-white tracking-wide`}
+                            className={`${commonStyles.inputBackground} ${commonStyles.border} h-10 w-full pl-4 pr-12 text-sm rounded-md outline-none group-focus-within:border-primary group-focus-within:text-gunmetalGray dark:group-focus-within:text-white tracking-wide`}
                         />
                         <button
                             className="absolute top-1/2 -translate-y-1/2 right-4 group-focus-within:text-primary"
                             onClick={(e) => {
                                 e.preventDefault();
-                                setIsNewVisible((prev) => !prev)
+                                setIsNewVisible((prev) => !prev);
                             }}
                         >
                             {isNewVisible ? (
@@ -68,7 +68,7 @@ function ProfileUpdateForm() {
                 </div>
 
                 {/* Submit Button */}
-                <button className="text-center w-full bg-primary rounded-md text-white font-medium h-10">
+                <button className="text-center w-full bg-primary rounded-md text-white font-medium h-10 hover:opacity-90">
                     Submit
                 </button>
             </form>
