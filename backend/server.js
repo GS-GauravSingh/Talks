@@ -1,6 +1,6 @@
 const app = require("./app");
 const http = require("http");
-const environmentVariables = require("./constants/environmentVariables");
+const environmentVariables = require("./src/constants/environmentVariables");
 
 const server = http.createServer(app);
 

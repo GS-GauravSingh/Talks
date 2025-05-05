@@ -1,10 +1,10 @@
 const path = require("path");
 require("dotenv").config({
-    path: path.join(__dirname, "../.env")
+    path: path.join(__dirname, "../../.env")
 });
 
 const environmentVariables = {
-    PORT: process.env.PORT || "8000",
+    PORT: process.env.PORT || "9000",
     allowedOrigin: process.env.frontendURL || "*",
     DB_USER_NAME: process.env.DB_USER_NAME,
     DB_USER_PASSWORD: process.env.DB_USER_PASSWORD,
