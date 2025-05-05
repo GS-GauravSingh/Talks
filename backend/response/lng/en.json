@@ -1,0 +1,8 @@
+{
+    "ACCOUNT_ALREADY_EXISTS": "Account already exists, log-in instead",
+    "ACCOUNT_DOES_NOT_EXISTS": "Account doesn't exists, sign-up instead",
+    "SIGNUP_SUCCESSFULL": "User registered successfully",
+    "LOGIN_SUCCESSFULL": "Logged-in successfully",
+    "INTERNAL_SERVER_ERROR": "Internal server error",
+    "INVALID_ROUTE": "Invalid route: The route you are trying to access doesn't exists"
+}
