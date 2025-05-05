@@ -43,7 +43,7 @@ sequelize
 
 // sync all models
 sequelize
-    .sync({ force: false, alter: true, logging: false })
+    .sync({ force: true, alter: false, logging: false })
     .then(() => {
         console.log("All models synced successfully!");
     })
