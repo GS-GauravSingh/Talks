@@ -1,13 +1,12 @@
-require("./models"); // this will trigger database connection logic
+require("./src/models"); // this will trigger database connection logic
 const express = require("express");
 const hpp = require("hpp");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const environmentVariables = require("./constants/environmentVariables");
+const environmentVariables = require("./src/constants/environmentVariables");
 const cookieParser = require("cookie-parser");
-const errorHandler = require("./middlewares/errorHandler.middleware");
-
+const errorHandler = require("./src/middlewares/errorHandler.middleware");
 
 // Express `app` initialization.
 const app = express();
@@ -20,8 +19,8 @@ app.use(
         credentials: true /* this allows cookies to be sent along with the HTTP requests and response */,
     })
 );
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));
+app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
 app.use(hpp());
 app.use(helmet());
@@ -33,6 +32,6 @@ app.get("/", (req, res) => {
 });
 
 // Error Handler Middleware
-app.use(errorHandler.methodNotAllowed);
+app.use(errorHandler.invalidRoute);
 
 module.exports = app;
