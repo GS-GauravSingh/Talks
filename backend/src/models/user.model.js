@@ -102,9 +102,14 @@ module.exports = (sequelize, DataTypes) => {
     // `beforeUpdate` hook is called when you update an existing record.
     // Only triggers if .save() or .update() is called on an existing record
     UserModel.addHook("beforeUpdate", async (user, options) => {
-        if (user.password) {
+        if (user.changed("password")) {
             const hashedPassword = await bcrypt.hash(user.password, 12);
             user.password = hashedPassword;
+        }
+
+        if (user.changed("otp")) {
+            const hashedOTP = await bcrypt.hash(user.otp, 12);
+            user.otp = hashedOTP;
         }
     });
 
@@ -114,8 +119,15 @@ module.exports = (sequelize, DataTypes) => {
         return await bcrypt.compare(enteredPassword, this.password);
     };
 
+    // Instance method to compare the otp provided by the user during the registration phase.
+    UserModel.prototype.compareOTP = async function (enteredOTP) {
+        return await bcrypt.compare(enteredOTP, this.otp);
+    };
+
     // Instance methods to verify Json Web Token.
-    UserModel.prototype.isTokenValid = function (jwtTimestamp) {
+    UserModel.prototype.isTokenValidAfterPasswordChanged = function (
+        jwtTimestamp
+    ) {
         // If the user has changed their password after the token was issued. Then `this.passwordChangedAt` is not `undefined` it must contain a date object.
         if (this.passwordChangedAt) {
             // JWT timestamps (iat - issued at) are in seconds.
