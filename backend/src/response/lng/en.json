@@ -5,5 +5,15 @@
     "LOGIN_SUCCESSFULL": "Logged-in successfully",
     "INTERNAL_SERVER_ERROR": "Internal server error",
     "INVALID_ROUTE": "Invalid route: The route you are trying to access doesn't exists",
-    "VALID_ROUTE_BUT_INVALID_METHOD": "The requested HTTP method is not allowed on this route"
+    "VALID_ROUTE_BUT_INVALID_METHOD": "The requested HTTP method is not allowed on this route",
+    "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY": "Some required fileds are missing",
+    "ERROR_SENDING_OTP_EMAIL": "Error sending OTP email, please try again later or use the resend OTP option",
+    "OTP_SENT_SUCCESSFULLY": "OTP sent successfully, please check your email",
+    "INVALID_OTP": "Invalid OTP, please try again",
+    "OTP_EXPIRED": "OTP expired, please request a new one",
+    "INCORRECT_PASSWORD": "Incorrect password, please try again",
+    "OTP_VERIFIED_SUCCESSFULLY": "OTP verified successfully, please login to continue",
+    "LOGOUT_SUCCESSFULL": "Logged-out successfully",
+    "UNAUTHORIZED": "Unauthorized, please login to continue",
+    "VALIDATION_ERROR": "Validation error, please check the request body and try again"
 }

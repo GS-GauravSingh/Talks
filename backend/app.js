@@ -26,10 +26,11 @@ app.use(hpp());
 app.use(helmet());
 app.use(morgan("dev"));
 
-// App RoutesfrontendURL
+// App Routes
 app.get("/", (req, res) => {
     return res.send("Hello from server!");
 });
+app.use("/api/v1", require("./src/routes/v1"));
 
 // Error Handler Middleware
 app.use(errorHandler.invalidRoute);

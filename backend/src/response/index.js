@@ -24,6 +24,11 @@ function getUserPreferredLanguage(acceptLanguageHeader) {
     // Step 1: Get the list of supported languages from the `lngMsg` object.
     const supportedLanguages = Object.keys(lngMsg);
 
+    // Check if acceptLanguageHeader exists before trying to split it
+    if (!acceptLanguageHeader) {
+        return "en"; // Return default language if header is missing
+    }
+
     // Step 2: Now, we have to parse the Accept-Language header, it gives us the string like this: "en-GB,en-US;q=0.9,en;q=0.8"
     const languages = acceptLanguageHeader
         ?.split(",") /* Example: ['en-GB', 'en-US;q=0.9', 'en;q=0.8'] */
