@@ -31,6 +31,13 @@ fs.readdirSync(__dirname)
         db[model.name] = model;
     });
 
+// Now call `associate` method for each model (if defined)
+Object.keys(db).forEach((modelName) => {
+    if (db[modelName].associate) {
+        db[modelName].associate(db);
+    }
+});
+
 // Check database connection
 sequelize
     .authenticate()

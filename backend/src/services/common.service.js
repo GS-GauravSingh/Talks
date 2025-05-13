@@ -8,9 +8,12 @@
  * @param {object} data - The data to be used for creating a new record.
  * @returns {object} - The record created in the database.
  */
-module.exports.createNewRecord = async (model, data) => {
+module.exports.createNewRecord = async (model, data, raw = false) => {
     try {
         const record = await model.create(data);
+        if(raw) {
+            return record;
+        }
         return record ? JSON.parse(JSON.stringify(record)) : false;
     } catch (error) {
         console.log("common.js: createNewRecord(): error: ", error);
@@ -22,18 +25,23 @@ module.exports.createNewRecord = async (model, data) => {
  * findByCondition(): This function is used to find a record in the database based on a condition.
  * @param {object} model - The model to be used for querying the database.
  * @param {object} condition - The condition to be used for querying the database.
+ * @param {object} attributes - The attributes to be returned from the database.
+ * @param {boolean} raw - Whether to return the raw data from the database or not.
  * @returns {object} - The record found in the database.
  */
-module.exports.findByCondition = async (model, condition, attributes) => {
+module.exports.findByCondition = async (model, condition, attributes, raw = false) => {
     try {
         const record = await model.findOne({
             where: condition,
-            ...(attributes !== undefined && {
+            ...(attributes !== undefined && attributes.length > 0 && {
                 attributes,
             }),
         });
 
-        console.log(record);
+        if(raw) {
+            return record;
+        }
+
         return record ? JSON.parse(JSON.stringify(record)) : false;
     } catch (error) {
         console.log("common.js: findByCondition(): error: ", error);
@@ -45,15 +53,22 @@ module.exports.findByCondition = async (model, condition, attributes) => {
  * findByPrimaryKey(): This function is used to find a record in the database based on its primary key.
  * @param {object} model - The model to be used for querying the database.
  * @param {number} id - The primary key of the record to be found.
+ * @param {object} attributes - The attributes to be returned from the database.
+ * @param {boolean} raw - Whether to return the raw data from the database or not.
  * @returns {object} - The record found in the database.
  */
-module.exports.findByPrimaryKey = async (model, id, attributes) => {
+module.exports.findByPrimaryKey = async (model, id, attributes, raw = false) => {
     try {
         const record = await model.findByPk(id, {
-            ...(attributes !== undefined && {
+            ...(attributes !== undefined && attributes.length > 0 && {
                 attributes,
             }),
         });
+
+        if(raw) {
+            return record;
+        }
+
         return record ? JSON.parse(JSON.stringify(record)) : false;
     } catch (error) {
         console.log("common.js: findByPrimaryKey(): error: ", error);
@@ -66,9 +81,12 @@ module.exports.findByPrimaryKey = async (model, id, attributes) => {
  * @param {object} record - The record to be saved in the database.
  * @returns {object} - The record saved in the database.
  */
-module.exports.saveRecord = async (record) => {
+module.exports.saveRecord = async (modelInstance, raw = false) => {
     try {
-        const savedRecord = await record.save();
+        const savedRecord = await modelInstance.save();
+        if(raw) {
+            return savedRecord;
+        }
         return savedRecord ? JSON.parse(JSON.stringify(savedRecord)) : false;
     } catch (error) {
         console.log("common.js: saveRecord(): error: ", error);
@@ -83,11 +101,12 @@ module.exports.saveRecord = async (record) => {
  * @param {boolean} [force=false] - Whether to force the deletion or not.
  * @returns {Promise<number|boolean>} - The number of deleted records or false if an error occurs.
  */
-exports.deleteQuery = async (model, condition, transaction, force = false) => {
+exports.deleteQuery = async (model, condition, force = false) => {
     try {
         const records = await model.destroy({ where: condition, force });
-        return datrecordsa ? JSON.parse(JSON.stringify(records)) : false;
+        return records ? JSON.parse(JSON.stringify(records)) : false;
     } catch (error) {
+        console.log("common.js: deleteQuery(): error: ", error);
         return false;
     }
 };

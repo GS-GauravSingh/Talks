@@ -11,6 +11,7 @@ router.post("/verify-otp", requestValidator(authValidation.verifyOTP), authContr
 router.post("/resend-otp", requestValidator(authValidation.resendOTP), authControllers.resendOTP);
 router.post("/login", requestValidator(authValidation.login), authControllers.login);
 router.post("/logout", authControllers.logout);
+router.delete("/delete-account", requestValidator(authValidation.deleteAccount), authControllers.deleteAccount);
 
 
 module.exports = router;

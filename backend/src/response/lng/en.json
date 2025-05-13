@@ -1,6 +1,7 @@
 {
     "ACCOUNT_ALREADY_EXISTS": "Account already exists, log-in instead",
     "ACCOUNT_DOES_NOT_EXISTS": "Account doesn't exists, sign-up instead",
+    "ACCOUNT_DELETED_SUCCESSFULLY": "Account deleted successfully",
     "SIGNUP_SUCCESSFULL": "User registered successfully",
     "LOGIN_SUCCESSFULL": "Logged-in successfully",
     "INTERNAL_SERVER_ERROR": "Internal server error",
@@ -10,7 +11,8 @@
     "ERROR_SENDING_OTP_EMAIL": "Error sending OTP email, please try again later or use the resend OTP option",
     "OTP_SENT_SUCCESSFULLY": "OTP sent successfully, please check your email",
     "INVALID_OTP": "Invalid OTP, please try again",
-    "OTP_EXPIRED": "OTP expired, please request a new one",
+    "OTP_EXPIRED": "OTP is correct but expired, please request a new one",
+    "OTP_NOT_EXPIRED": "OTP not expired, please wait for the previous OTP to expire before requesting a new one",
     "INCORRECT_PASSWORD": "Incorrect password, please try again",
     "OTP_VERIFIED_SUCCESSFULLY": "OTP verified successfully, please login to continue",
     "LOGOUT_SUCCESSFULL": "Logged-out successfully",
