@@ -1,5 +1,12 @@
 const bcrypt = require("bcryptjs");
 
+/**
+ * Defines the User model.
+ * @param {object} sequelize - The Sequelize instance.
+ * @param {object} DataTypes - The Sequelize DataTypes object.
+ * @returns {object} - The User model.
+ */
+
 module.exports = (sequelize, DataTypes) => {
     const UserModel = sequelize.define(
         "Users",
@@ -85,6 +92,7 @@ module.exports = (sequelize, DataTypes) => {
                     fields: ["email"],
                 },
             ],
+            paranoid: true,
         }
     );
 
@@ -102,12 +110,12 @@ module.exports = (sequelize, DataTypes) => {
     // `beforeUpdate` hook is called when you update an existing record.
     // Only triggers if .save() or .update() is called on an existing record
     UserModel.addHook("beforeUpdate", async (user, options) => {
-        if (user.changed("password")) {
+        if (user.password && user.changed("password")) {
             const hashedPassword = await bcrypt.hash(user.password, 12);
             user.password = hashedPassword;
         }
 
-        if (user.changed("otp")) {
+        if (user.otp &&user.changed("otp")) {
             const hashedOTP = await bcrypt.hash(user.otp, 12);
             user.otp = hashedOTP;
         }
@@ -124,6 +132,16 @@ module.exports = (sequelize, DataTypes) => {
         return await bcrypt.compare(enteredOTP, this.otp);
     };
 
+    // Instance method to check whether OTP is expired or not.
+    UserModel.prototype.isOTPExpired = function () {
+        if (this.otpExpiryTime.getTime() < Date.now()) {
+            // OTP is expired.
+            return true;
+        }
+
+        return false;
+    };
+
     // Instance methods to verify Json Web Token.
     UserModel.prototype.isTokenValidAfterPasswordChanged = function (
         jwtTimestamp
@@ -137,6 +155,16 @@ module.exports = (sequelize, DataTypes) => {
 
         // if passwordChangedAt is undefined (i.e., the password was never changed after token issuance).
         return true;
+    };
+
+    // Define a custom static method.
+    UserModel.associate = (models) => {
+        // Define the association between User and Conversation models.
+        // A user can belongs to many conversations.
+        UserModel.belongsToMany(models.Conversations, {
+            through: "UserConversations",
+            foreignKey: "userId",
+        });
     };
 
     return UserModel;
