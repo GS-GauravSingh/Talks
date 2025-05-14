@@ -30,7 +30,7 @@ app.use(morgan("dev"));
 app.get("/", (req, res) => {
     return res.send("Hello from server!");
 });
-app.use("/api/v1", require("./src/routes/v1"));
+app.use("/api", require("./src/routes"));
 
 // Error Handler Middleware
 app.use(errorHandler.invalidRoute);
