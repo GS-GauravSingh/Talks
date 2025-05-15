@@ -17,5 +17,13 @@
     "OTP_VERIFIED_SUCCESSFULLY": "OTP verified successfully, please login to continue",
     "LOGOUT_SUCCESSFULL": "Logged-out successfully",
     "UNAUTHORIZED": "Unauthorized, please login to continue",
-    "VALIDATION_ERROR": "Validation error, please check the request body and try again"
+    "VALIDATION_ERROR": "Validation error, please check the request body and try again",
+    "USER_DETAILS_FETCHED_SUCCESSFULLY": "Logged in user details fetched successfully",
+    "USER_DETAILS_UPDATED_SUCCESSFULLY": "User details updated successfully",
+    "NO_CHANGES_TO_UPDATE": "No changes to update",
+    "ERROR_UPLOADING_AVATAR_TO_CLOUDINARY": "Error uploading avatar to cloudinary, please try again later",
+    "FILE_NOT_FOUND": "File not found, please try again later",
+    "INCORRECT_CURRENT_PASSWORD": "Incorrect current password, please try again",
+    "PASSWORD_UPDATED_SUCCESSFULLY": "Password updated successfully",
+    "NEW_PASSWORD_SAME_AS_CURRENT_PASSWORD": "New password is same as the current password, please try again"
 }

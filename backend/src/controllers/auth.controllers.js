@@ -4,7 +4,7 @@ const { StatusCodes } = require("http-status-codes");
 const otpGenerator = require("otp-generator");
 const mailer = require("../services/mailer.service");
 const otpEmailTemplate = require("../templates/otpTemplate");
-const { generateJWT, verifyJWT } = require("../utils/jsonWebToken");
+const { generateJWT, verifyJWT } = require("../utils/jsonWebToken.util");
 const environmentVariables = require("../constants/environmentVariables");
 const commonService = require("../services/common.service");
 
@@ -519,57 +519,4 @@ module.exports.deleteAccount = async (req, res, next) => {
     }
 };
 
-// PROTECT
-module.exports.protect = async (req, res, next) => {
-    let token;
-    if (
-        req.headers.authorization &&
-        req.headers.authorization.startsWith("Bearer")
-    ) {
-        token = req.headers.authorization.split(" ")[1];
-    } else if (req.cookies.jwt) {
-        token = req.cookies.jwt;
-    }
 
-    if (!token) {
-        return response.error(
-            req,
-            res,
-            { msgCode: "UNAUTHORIZED" },
-            StatusCodes.UNAUTHORIZED
-        );
-    }
-
-    const decoded = verifyJWT(token);
-    if (!decoded) {
-        return response.error(
-            req,
-            res,
-            { msgCode: "UNAUTHORIZED" },
-            StatusCodes.UNAUTHORIZED
-        );
-    }
-
-    const { Users } = db.models;
-    const user = await Users.findByPk(decoded.id);
-    if (!user) {
-        return response.error(
-            req,
-            res,
-            { msgCode: "UNAUTHORIZED" },
-            StatusCodes.UNAUTHORIZED
-        );
-    }
-
-    if (!user.isTokenValidAfterPasswordChanged(decoded.iat)) {
-        return response.error(
-            req,
-            res,
-            { msgCode: "UNAUTHORIZED" },
-            StatusCodes.UNAUTHORIZED
-        );
-    }
-
-    req.user = user;
-    next();
-};
