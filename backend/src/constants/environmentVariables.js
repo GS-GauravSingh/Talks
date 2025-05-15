@@ -4,7 +4,7 @@ require("dotenv").config({
 });
 
 const environmentVariables = {
-    PORT: process.env.PORT || "9000",
+    PORT: process.env.PORT || "8000",
     allowedOrigin: process.env.frontendURL || "*",
     DB_USER_NAME: process.env.DB_USER_NAME,
     DB_USER_PASSWORD: process.env.DB_USER_PASSWORD,
@@ -15,6 +15,10 @@ const environmentVariables = {
     NODEMAILER_USERNAME: process.env.NODEMAILER_USERNAME,
     NODEMAILER_PASSWORD: process.env.NODEMAILER_PASSWORD,
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    MAX_FILE_SIZE: process.env.MAX_FILE_SIZE || 1, // in MB
 };
 
 module.exports = environmentVariables;
