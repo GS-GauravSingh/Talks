@@ -2,7 +2,7 @@
  * Each user belongs to one or more conversations. There is a one-to-many relationship between users and conversations.
  * And this Conversatiion model stores information about each conversation like last message, is it a group chat, and name of the conversation (if it's a group chat).
  *
- * @param {object} sequelize - The Sequelize instance. 
+ * @param {object} sequelize - The Sequelize instance.
  * @param {object} DataTypes - The Sequelize DataTypes object.
  * @returns {object} - The Conversation model.
  */
@@ -17,9 +17,9 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
             },
 
-            lastMessage: {
+            name: {
                 type: DataTypes.STRING,
-                allowNull: true,
+                allowNull: true, // only used for group chats
             },
 
             isGroupChat: {
@@ -27,9 +27,21 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: false,
             },
 
-            name: {
-                type: DataTypes.STRING,
-                allowNull: true, // optional — used only for group chats
+            latestMessageId: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
+
+            groupAdminId: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
+
+            avatar: {
+                type: DataTypes.STRING, // cloudinary URL
+                defaultValue:
+                    "https://res.cloudinary.com/df7wvngsb/image/upload/v1747307232/group-chat_i9valz.png",
+                allowNull: false, // optional - used only for group chats
             },
         },
         {
@@ -39,22 +51,23 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    // Define a custom static method.
-    ConversationModel.associate = (models) => {
-        // Define the association between Conversation and User models.
-        // A conversation can have many users.
+    // Associations
+    ConversationModel.associate = function (models) {
+        // a conversation can have many users.
+        // many-to-many relationship between conversations and users.
         ConversationModel.belongsToMany(models.Users, {
-            through: "UserConversations",
+            through: models.UserConversations,
             foreignKey: "conversationId",
         });
-        
-        // Define the association between Conversation and Message models.
-        // A conversation can have many messages.
+
+        // a conversation can have many messages.
+        // one-to-many relationship between conversations and messages.
         ConversationModel.hasMany(models.Messages, {
-            foreignKey: "conversationId",
+            foreignKey: "conversationId", // references the `conversationId` column in the `Messages` table.
         });
+
         
-    }
+    };
 
     return ConversationModel;
 };
