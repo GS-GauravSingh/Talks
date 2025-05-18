@@ -157,15 +157,22 @@ module.exports = (sequelize, DataTypes) => {
         return true;
     };
 
-    // Define a custom static method.
-    UserModel.associate = (models) => {
-        // Define the association between User and Conversation models.
-        // A user can belongs to many conversations.
+    // Associations
+    UserModel.associate = function (models){
+
+        // a user can be part of many conversations.
+        // many-to-many relationship between users and conversations.
         UserModel.belongsToMany(models.Conversations, {
-            through: "UserConversations",
+            through: models.UserConversations,
             foreignKey: "userId",
         });
-    };
+
+        // a user can have many messages.
+        // one-to-many relationship between users and messages.
+        UserModel.hasMany(models.Messages, {
+            foreignKey: "senderId", // references the `senderId` column in the `Messages` table.
+        });
+    }
 
     return UserModel;
 };

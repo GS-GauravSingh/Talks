@@ -44,25 +44,25 @@ module.exports = (sequelize, DataTypes) => {
         {
             tableName: "messages",
             timestamps: true,
-            indexes: [{ fields: ["senderId"] }],
+            indexes: [{ fields: ["senderId"] }, { fields: ["conversationId"] }],
             paranoid: true,
         }
     );
 
-    // Define a custom static method.
-    MessageModel.associate = (models) => {
-        // Define the association between Message and User models.
-        // A message is sent by a user.
+    // Associations
+    MessageModel.associate = function (models) {
+        // a message is sent by a user.
+        // one-to-many relationship between users and messages.
         MessageModel.belongsTo(models.Users, {
-            foreignKey: "senderId",
+            foreignKey: "senderId", // references the `senderId` column in the `Messages` table.
         });
-        
-        // Define the association between Message and Conversation models.
-        // A message is sent in a conversation.
+
+        // a message is sent in a conversation.
+        // one-to-many relationship between conversations and messages.
         MessageModel.belongsTo(models.Conversations, {
-            foreignKey: "conversationId",
+            foreignKey: "conversationId", // references the `conversationId` column in the `Messages` table.
         });
-    }
+    };
 
     return MessageModel;
 };

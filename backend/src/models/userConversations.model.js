@@ -1,41 +1,38 @@
-// models/UserConversation.js
-
 /**
- * Defines the UserConversation model.
- * This model stores the mapping of which user belongs to which conversation.
+ * This model is used to store which user is part of which conversation.
  *
- * @param {object} sequelize - The Sequelize instance. 
- * @param {object} DataTypes - The Sequelize DataTypes object.
+ * @params {object} sequelize - The Sequelize instance.
+ * @params {object} DataTypes - The Sequelize DataTypes object.
  * @returns {object} - The UserConversation model.
  */
+
 module.exports = (sequelize, DataTypes) => {
-    const UserConversationsModel = sequelize.define(
+    const UserConversationModel = sequelize.define(
         "UserConversations",
         {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true,
+            },
+
             userId: {
                 type: DataTypes.INTEGER,
-                primaryKey: true,
-                references: {
-                    model: "Users", // 'Users' table
-                    key: "id", // Foreign key reference
-                },
+                allowNull: false,
             },
 
             conversationId: {
                 type: DataTypes.INTEGER,
-                primaryKey: true,
-                references: {
-                    model: "Conversations", // 'Conversations' table
-                    key: "id", // Foreign key reference
-                },
+                allowNull: false,
             },
         },
         {
             tableName: "user_conversations",
             timestamps: true,
+            indexes: [{ fields: ["userId"] }, { fields: ["conversationId"] }],
             paranoid: true,
         }
     );
 
-    return UserConversationsModel;
+    return UserConversationModel;
 };

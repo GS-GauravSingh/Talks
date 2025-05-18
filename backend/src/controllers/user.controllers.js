@@ -37,6 +37,37 @@ module.exports.getMe = async (req, res, next) => {
     }
 };
 
+// GET ALL USERS - Get all users
+module.exports.getAllUsers = async (req, res, next) => {
+    const dbTransaction = await db.transaction();
+
+    try {
+        const { Users } = db.models;
+        const users = await commonService.findAllWithCount(Users, {}, []);
+        return response.success(
+            req,
+            res,
+            {
+                msgCode: "ALL_USER_DETAILS_FETCHED_SUCCESSFULLY",
+                data: {
+                    users: users
+                },
+            },
+            StatusCodes.OK,
+            dbTransaction
+        );
+    } catch (error) {
+        console.log("user.controllers.js: getAllUsers(): error: ", error);
+        return response.error(
+            req,
+            res,
+            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
+            StatusCodes.INTERNAL_SERVER_ERROR,
+            dbTransaction
+        );
+    }
+};
+
 // UPDATE ME - Update logged-in user details like bio, jobTitle, and country.
 module.exports.updateMe = async (req, res, next) => {
     const dbTransaction = await db.transaction();
@@ -111,7 +142,7 @@ module.exports.updateAvatar = async (req, res, next) => {
     try {
         const { user } = req;
         const fileObj = req.file;
-        if(!fileObj){
+        if (!fileObj) {
             return response.error(
                 req,
                 res,
@@ -172,13 +203,11 @@ module.exports.updateAvatar = async (req, res, next) => {
 
 // UPDATE PASSWORD
 module.exports.updatePassword = async (req, res, next) => {
-
     const dbTransaction = await db.transaction();
 
     try {
-
         const { currentPassword, newPassword } = req.body;
-        if(!currentPassword || !newPassword){
+        if (!currentPassword || !newPassword) {
             return response.error(
                 req,
                 res,
@@ -234,7 +263,6 @@ module.exports.updatePassword = async (req, res, next) => {
             StatusCodes.OK,
             dbTransaction
         );
-        
     } catch (error) {
         console.log("user.controllers.js: updatePassword(): error: ", error);
         return response.error(
