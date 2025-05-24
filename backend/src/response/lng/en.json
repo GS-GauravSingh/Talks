@@ -25,6 +25,11 @@
     "ERROR_UPLOADING_AVATAR_TO_CLOUDINARY": "Error uploading avatar to cloudinary, please try again later",
     "FILE_NOT_FOUND": "File not found, please try again later",
     "INCORRECT_CURRENT_PASSWORD": "Incorrect current password, please try again",
+    "FILE_UPLOAD_ERROR": "Error uploading file",
+    "FILE_TOO_LARGE": "File size exceeds the limit",
+    "TOO_MANY_FILES": "Too many files uploaded",
+    "INVALID_FILE_FIELD": "Invalid file field name",
+    "INVALID_FILE_TYPE": "Invalid file type",
     "PASSWORD_UPDATED_SUCCESSFULLY": "Password updated successfully",
     "NEW_PASSWORD_SAME_AS_CURRENT_PASSWORD": "New password is same as the current password, please try again",
     "CONVERSATION_ALREADY_EXISTS": "Conversation already exists",
@@ -36,5 +41,6 @@
     "CONVERSATION_UPDATED_SUCCESSFULLY": "Conversation updated successfully",
     "PERMISSION_DENIED": "Permission denied, you don't have the permission to perform this action",
     "CONVERSATION_DELETED_SUCCESSFULLY": "Conversation deleted successfully",
-    "CONVERSATION_UPDATE_FAILED": "Error updating conversation, please try again later"
+    "CONVERSATION_UPDATE_FAILED": "Error updating conversation, please try again later",
+    "USER_DETAILS_UPDATE_FAILED": "Error updating user details, please try again later"
 }

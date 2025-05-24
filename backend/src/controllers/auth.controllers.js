@@ -4,7 +4,7 @@ const { StatusCodes } = require("http-status-codes");
 const otpGenerator = require("otp-generator");
 const mailer = require("../services/mailer.service");
 const otpEmailTemplate = require("../templates/otpTemplate");
-const { generateJWT, verifyJWT } = require("../utils/jsonWebToken.util");
+const { generateJWT } = require("../utils/jsonWebToken.util");
 const environmentVariables = require("../constants/environmentVariables");
 const commonService = require("../services/common.service");
 
@@ -20,21 +20,26 @@ module.exports.register = async (req, res, next) => {
             return response.error(
                 req,
                 res,
-                { msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY" },
+                {
+                    msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
+                    data: "firstname, email, and password are required",
+                },
                 StatusCodes.BAD_REQUEST,
                 dbTrasaction
             );
         }
 
         // Check: Account already exists
-        const user = commonService.findByCondition(Users, { email: email });
+        const user = await commonService.findByCondition(Users, { email: email });
 
         if (user && user.isVerified) {
             // Account exists and is verified.
             return response.error(
                 req,
                 res,
-                { msgCode: "ACCOUNT_ALREADY_EXISTS" },
+                {
+                    msgCode: "ACCOUNT_ALREADY_EXISTS",
+                },
                 StatusCodes.BAD_REQUEST,
                 dbTrasaction
             );
@@ -43,36 +48,51 @@ module.exports.register = async (req, res, next) => {
         if (user && !user.isVerified) {
             // Account exists but is not verified.
             // Delete the account and create a new one.
-            await commonService.deleteQuery(Users, { email: email }, true);
+            await commonService.deleteQuery(
+                Users,
+                { email: email },
+                true,
+                dbTrasaction
+            );
         }
 
         // If the account doesn't exists and,
         // Account exists but is not verified.
         // Then in both of the cases, we register this user.
-        const newUser = await commonService.createNewRecord(Users, {
-            firstname: firstname,
-            lastname: lastname ? lastname : null,
-            email: email,
-            password: password,
-        });
+        const newUser = await commonService.createNewRecord(
+            Users,
+            {
+                firstname: firstname,
+                lastname: lastname ? lastname : null,
+                email: email,
+                password: password,
+            },
+            false,
+            dbTrasaction
+        );
         if (!newUser) {
             return response.error(
                 req,
                 res,
-                { msgCode: "INTERNAL_SERVER_ERROR" },
+                {
+                    msgCode: "INTERNAL_SERVER_ERROR",
+                    data: "Failed to register new user, please try again later",
+                },
                 StatusCodes.INTERNAL_SERVER_ERROR,
                 dbTrasaction
             );
         }
-
+        
+        await dbTrasaction.commit(); // close the transaction
         req.userId = newUser.id; // attach the user's id to the request object for further use.
+        console.log("new user created: ", newUser);
         next(); // calls the next middleware
     } catch (error) {
         console.log("auth.controllers.js: register(): error: ", error);
         return response.error(
             req,
             res,
-            { msgCode: "INTERNAL_SERVER_ERROR" },
+            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
             dbTrasaction
         );
@@ -86,18 +106,22 @@ module.exports.sendOTP = async (req, res, next) => {
     try {
         const { Users } = db.models;
         const userId = req.userId;
-
+        
         const user = await commonService.findByPrimaryKey(
             Users,
             userId,
             [],
             true
         );
+
         if (!user) {
+            console.log("user not found")
             return response.error(
                 req,
                 res,
-                { msgCode: "ACCOUNT_DOES_NOT_EXISTS" },
+                {
+                    msgCode: "ACCOUNT_DOES_NOT_EXISTS",
+                },
                 StatusCodes.BAD_REQUEST,
                 dbTrasaction
             );
@@ -110,11 +134,28 @@ module.exports.sendOTP = async (req, res, next) => {
             upperCaseAlphabets: false,
             specialChars: false,
         });
+        console.log(otp);
 
         // store the generated OTP in the user record.
         user.otp = otp;
         user.otpExpiryTime = Date.now() + 2 * 60 * 1000; // once OTP is generated, it will be valid for 2 minutes.
-        await commonService.saveRecord(user); // save the changes - otp will be hased automatically due to the `beforeUpdate` hook.
+        const updatedUser = await commonService.saveRecord(
+            user,
+            false,
+            dbTrasaction
+        ); // save the changes - otp will be hased automatically due to the `beforeUpdate` hook.
+        
+        if (!updatedUser) {
+            return response.error(
+                req,
+                res,
+                {
+                    msgCode: "USER_DETAILS_UPDATE_FAILED",
+                },
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                dbTrasaction
+            );
+        }
 
         // send the OTP to the user's email address.
         const fullName = `${user.firstname.charAt(0).toUpperCase() + user.firstname.slice(1)} ${user.lastname ? user.lastname.charAt(0).toUpperCase() + user.lastname.slice(1) : ""}`;
@@ -132,7 +173,9 @@ module.exports.sendOTP = async (req, res, next) => {
             return response.error(
                 req,
                 res,
-                { msgCode: "ERROR_SENDING_OTP_EMAIL" },
+                {
+                    msgCode: "ERROR_SENDING_OTP_EMAIL",
+                },
                 StatusCodes.INTERNAL_SERVER_ERROR,
                 dbTrasaction
             );
@@ -150,7 +193,7 @@ module.exports.sendOTP = async (req, res, next) => {
         return response.error(
             req,
             res,
-            { msgCode: "INTERNAL_SERVER_ERROR" },
+            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
             dbTrasaction
         );
@@ -169,7 +212,10 @@ module.exports.verifyOTP = async (req, res, next) => {
             return response.error(
                 req,
                 res,
-                { msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY" },
+                {
+                    msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
+                    data: "email and otp are required",
+                },
                 StatusCodes.BAD_REQUEST,
                 dbTrasaction
             );
@@ -231,7 +277,22 @@ module.exports.verifyOTP = async (req, res, next) => {
         user.otp = null;
         user.otpExpiryTime = null;
         user.isVerified = true;
-        const updatedUser = await commonService.saveRecord(user);
+        const updatedUser = await commonService.saveRecord(
+            user,
+            false,
+            dbTrasaction
+        );
+        if (!updatedUser) {
+            return response.error(
+                req,
+                res,
+                {
+                    msgCode: "USER_DETAILS_UPDATE_FAILED",
+                },
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                dbTrasaction
+            );
+        }
 
         // Send JWT token as a cookie
         const token = generateJWT({ id: user.id });
@@ -260,7 +321,7 @@ module.exports.verifyOTP = async (req, res, next) => {
         return response.error(
             req,
             res,
-            { msgCode: "INTERNAL_SERVER_ERROR" },
+            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
             dbTrasaction
         );
@@ -326,7 +387,22 @@ module.exports.resendOTP = async (req, res, next) => {
         // store the generated OTP in the user record.
         user.otp = otp;
         user.otpExpiryTime = Date.now() + 2 * 60 * 1000; // once OTP is generated, it will be valid for 2 minutes.
-        await commonService.saveRecord(user); // save the changes - otp will be hased automatically due to the `beforeUpdate` hook.
+        const updatedUser = await commonService.saveRecord(
+            user,
+            false,
+            dbTrasaction
+        ); // save the changes - otp will be hased automatically due to the `beforeUpdate` hook.
+        if (!updatedUser) {
+            return response.error(
+                req,
+                res,
+                {
+                    msgCode: "USER_DETAILS_UPDATE_FAILED",
+                },
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                dbTrasaction
+            );
+        }
 
         // send the OTP to the user's email address.
         const fullName = `${user.firstname.charAt(0).toUpperCase() + user.firstname.slice(1)} ${user.lastname ? user.lastname.charAt(0).toUpperCase() + user.lastname.slice(1) : ""}`;
@@ -362,7 +438,7 @@ module.exports.resendOTP = async (req, res, next) => {
         return response.error(
             req,
             res,
-            { msgCode: "INTERNAL_SERVER_ERROR" },
+            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
             dbTrasaction
         );
@@ -382,7 +458,8 @@ module.exports.login = async (req, res, next) => {
                 req,
                 res,
                 { msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY" },
-                StatusCodes.BAD_REQUEST
+                StatusCodes.BAD_REQUEST,
+                dbTrasaction
             );
         }
 
@@ -399,6 +476,19 @@ module.exports.login = async (req, res, next) => {
                 req,
                 res,
                 { msgCode: "ACCOUNT_DOES_NOT_EXISTS" },
+                StatusCodes.BAD_REQUEST,
+                dbTrasaction
+            );
+        }
+
+        if (user && !user.isVerified) {
+            return response.error(
+                req,
+                res,
+                {
+                    msgCode: "ACCOUNT_NOT_VERIFIED",
+                    data: "Please verify your account first, re-register to verify your account",
+                },
                 StatusCodes.BAD_REQUEST,
                 dbTrasaction
             );
@@ -445,7 +535,7 @@ module.exports.login = async (req, res, next) => {
         return response.error(
             req,
             res,
-            { msgCode: "INTERNAL_SERVER_ERROR" },
+            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
             dbTrasaction
         );
@@ -470,7 +560,7 @@ module.exports.logout = async (req, res, next) => {
         return response.error(
             req,
             res,
-            { msgCode: "INTERNAL_SERVER_ERROR" },
+            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
             dbTrasaction
         );
@@ -488,7 +578,8 @@ module.exports.deleteAccount = async (req, res, next) => {
         const accountDeleted = await commonService.deleteQuery(
             Users,
             { id: userId },
-            true
+            true,
+            dbTrasaction
         );
         if (!accountDeleted) {
             return response.error(
@@ -512,11 +603,9 @@ module.exports.deleteAccount = async (req, res, next) => {
         return response.error(
             req,
             res,
-            { msgCode: "INTERNAL_SERVER_ERROR" },
+            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
             dbTrasaction
         );
     }
 };
-
-

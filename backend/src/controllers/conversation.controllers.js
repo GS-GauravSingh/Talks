@@ -4,50 +4,48 @@ const { StatusCodes } = require("http-status-codes");
 const db = require("../models").sequelize;
 const { Op } = require("sequelize");
 const cloudinaryUtils = require("../utils/cloudinary.util");
+const { getPagination } = require("../config/helper");
 
-// CREATE CONVERSATION - creates a new conversation between the current user and the other users.
+// CREATE CONVERSATION - creates a new conversation between the current user and the other user(s).
 module.exports.createConversation = async (req, res, next) => {
     const dbTransaction = await db.transaction();
 
     try {
         const { user } = req; // logged in user
-        const { userIds, name } = req.body;
-        const { Conversations, UserConversations } = db.models;
-
-        const isGroupChat = userIds.length > 1;
-        const grpName = isGroupChat ? (name ? name : "Group Chat") : null;
+        const { userIds, name, isGroupChat: initialIsGroupChat } = req.body;
+        const { Conversations, UserConversations, Users } = db.models;
 
         // check if the conversation already exists or not.
         // just have to figure out where all users are part of the same conversation inculuding the current user.
-        const allUserIds = userIds.includes(user.id)
-            ? userIds
-            : [user.id, ...userIds];
+        const uniqueUserIds = new Set(userIds);
+        uniqueUserIds.add(user.id);
 
-        allUserIds.sort();
+        const allUserIds = [...uniqueUserIds];
+        const isGroupChat = allUserIds.length > 2 || initialIsGroupChat;
+        const grpName = isGroupChat
+            ? name
+                ? name
+                : `${Date.now()}`
+            : allUserIds.length === 1
+              ? "self"
+              : allUserIds.length === 2
+                ? "one-to-one"
+                : null;
 
-        const isConversationAlreadyExists =
-            await commonService.findAllWithGroupByAndAggregateFunction(
-                UserConversations,
-                {
-                    userId: {
-                        [Op.in]: allUserIds,
-                    },
-                },
-                ["conversationId"],
-                false,
-                ["conversationId"],
-                db.literal(
-                    `COUNT("UserConversations"."userId") = ${allUserIds.length}`
-                )
-            );
-
-        if (isConversationAlreadyExists.length > 0) {
+        // check if the conversation already exists or not.
+        const isConversationAlreadyExists = await commonService.findByCondition(
+            Conversations,
+            {
+                participants: allUserIds,
+            }
+        );
+        if (isConversationAlreadyExists) {
             return response.error(
                 req,
                 res,
                 {
                     msgCode: "CONVERSATION_ALREADY_EXISTS",
-                    data: isConversationAlreadyExists[0],
+                    data: isConversationAlreadyExists,
                 },
                 StatusCodes.BAD_REQUEST,
                 dbTransaction
@@ -61,7 +59,10 @@ module.exports.createConversation = async (req, res, next) => {
                 name: grpName,
                 isGroupChat: isGroupChat,
                 groupAdminId: isGroupChat ? user.id : null,
-            }
+                participants: allUserIds,
+            },
+            false,
+            dbTransaction
         );
 
         if (!newConversation) {
@@ -70,7 +71,7 @@ module.exports.createConversation = async (req, res, next) => {
                 res,
                 {
                     msgCode: "INTERNAL_SERVER_ERROR",
-                    data: "Failed to create new conversation",
+                    data: "Failed to create new conversation, please try again later",
                 },
                 StatusCodes.INTERNAL_SERVER_ERROR,
                 dbTransaction
@@ -85,11 +86,12 @@ module.exports.createConversation = async (req, res, next) => {
             };
         });
 
-        const addedUsers = await commonService.bulkAdd(
+        const userToConversationMapping = await commonService.bulkAdd(
             UserConversations,
-            userToConversation
+            userToConversation,
+            dbTransaction
         );
-        if (!addedUsers) {
+        if (!userToConversationMapping) {
             return response.error(
                 req,
                 res,
@@ -132,8 +134,8 @@ module.exports.getConversation = async (req, res, next) => {
     const dbTransaction = await db.transaction();
 
     try {
-        const { conversationId } = req.params;
         const { user } = req;
+        const { conversationId } = req.params;
         const { Conversations, UserConversations, Users } = db.models;
 
         const conversation = await commonService.findByCondition(
@@ -153,6 +155,8 @@ module.exports.getConversation = async (req, res, next) => {
             );
         }
 
+        // Conversations.id -> UserConversations.conversationId - UserConversations.userId -> Users.id
+        // Internally it uses UserConversatons model to find the user details.
         const conversationDetails =
             await commonService.findAllWithOneAssociatedModel(
                 Conversations,
@@ -201,15 +205,29 @@ module.exports.getAllConversations = async (req, res, next) => {
     const dbTransaction = await db.transaction();
 
     try {
+        const {
+            page,
+            size,
+            sort_by = "createdAt",
+            sort_order = "DESC",
+        } = req.query;
+        const { limit, offset } = getPagination({ page, size });
+        const order = [[sort_by, sort_order]];
         const { user } = req;
         const { Conversations, UserConversations, Users } = db.models;
 
         const conversations = await commonService.findAllWithCount(
-            UserConversations,
+            Conversations,
             {
-                userId: user.id,
+                participants: {
+                    [Op.contains]: [user.id],
+                },
             },
-            ["conversationId"]
+            [],
+            false,
+            limit,
+            order,
+            offset
         );
 
         if (!conversations) {
@@ -223,7 +241,7 @@ module.exports.getAllConversations = async (req, res, next) => {
         }
 
         const conversationIds = conversations.rows.map((conversation) => {
-            return conversation.conversationId;
+            return conversation.id;
         });
 
         const allConversations =
@@ -282,13 +300,15 @@ module.exports.updateConversation = async (req, res, next) => {
         const fileObj = req.file;
         const { user } = req;
         const { Conversations } = db.models;
-        console.log(name);
 
         if (!name && !fileObj) {
             return response.error(
                 req,
                 res,
-                { msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY" },
+                {
+                    msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
+                    data: "name or avatar atleast one of them is required",
+                },
                 StatusCodes.BAD_REQUEST,
                 dbTransaction
             );
@@ -433,12 +453,30 @@ module.exports.deleteConversation = async (req, res, next) => {
             );
         }
 
+        if (!conversation.isGroupChat && conversation.name === "self") {
+            return response.error(
+                req,
+                res,
+                {
+                    msgCode: "PERMISSION_DENIED",
+                    data: {
+                        message:
+                            "cannot delete self-chat, only messages can be deleted in self chat",
+                    },
+                },
+                StatusCodes.FORBIDDEN,
+                dbTransaction
+            );
+        }
+
         // Delete data from the Conversations table
         const deletedConversation = await commonService.deleteQuery(
             Conversations,
             {
                 id: conversationId,
-            }
+            },
+            false,
+            dbTransaction
         );
         if (!deletedConversation) {
             return response.error(
@@ -455,7 +493,9 @@ module.exports.deleteConversation = async (req, res, next) => {
             UserConversations,
             {
                 conversationId: conversationId,
-            }
+            },
+            false,
+            dbTransaction
         );
         if (!deletedUserConversations) {
             return response.error(
@@ -468,9 +508,14 @@ module.exports.deleteConversation = async (req, res, next) => {
         }
 
         // Delete date from Messages table
-        await commonService.deleteQuery(Messages, {
-            conversationId: conversationId,
-        });
+        await commonService.deleteQuery(
+            Messages,
+            {
+                conversationId: conversationId,
+            },
+            false,
+            dbTransaction
+        );
 
         return response.success(
             req,

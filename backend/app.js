@@ -34,5 +34,6 @@ app.use("/api", require("./src/routes"));
 
 // Error Handler Middleware
 app.use(errorHandler.invalidRoute);
+app.use(errorHandler.globalErrorHandler);
 
 module.exports = app;
