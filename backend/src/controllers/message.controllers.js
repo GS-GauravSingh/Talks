@@ -13,8 +13,9 @@ module.exports.sendMessage = async (req, res, next) => {
         const { user } = req;
         const { conversationId } = req.params;
         const { message } = req.body;
-        const { Conversations, Messages, Users } = db.models;
+        const { Conversations, Messages } = db.models;
         const fileObj = req.file;
+        console.log("file: ", fileObj);
 
         if (!message && !fileObj) {
             return response.error(
@@ -70,13 +71,17 @@ module.exports.sendMessage = async (req, res, next) => {
                 );
             }
 
-            message.image = cloudinaryResponse.url;
+            messageData.image = cloudinaryResponse.url;
         }
 
         // create a new message
         const newMessage = await commonService.createNewRecord(
             Messages,
-            messageData,
+            {
+                ...messageData,
+                senderId: user.id,
+                conversationId: conversationId,
+            },
             false,
             dbTransaction
         );
@@ -137,6 +142,19 @@ module.exports.deleteMessage = async (req, res, next) => {
                 req,
                 res,
                 { msgCode: "MESSAGE_DOES_NOT_EXISTS" },
+                StatusCodes.BAD_REQUEST,
+                dbTransaction
+            );
+        }
+
+        if (isMessageExists && isMessageExists.senderId !== user.id) {
+            return response.error(
+                req,
+                res,
+                {
+                    msgCode: "PERMISSION_DENIED",
+                    data: "User who sent the message is allowed to delete the message",
+                },
                 StatusCodes.BAD_REQUEST,
                 dbTransaction
             );

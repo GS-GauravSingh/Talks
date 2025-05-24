@@ -447,7 +447,10 @@ module.exports.deleteConversation = async (req, res, next) => {
             return response.error(
                 req,
                 res,
-                { msgCode: "PERMISSION_DENIED" },
+                {
+                    msgCode: "PERMISSION_DENIED",
+                    data: "only group admin can delete a group chat",
+                },
                 StatusCodes.FORBIDDEN,
                 dbTransaction
             );
@@ -459,10 +462,7 @@ module.exports.deleteConversation = async (req, res, next) => {
                 res,
                 {
                     msgCode: "PERMISSION_DENIED",
-                    data: {
-                        message:
-                            "cannot delete self-chat, only messages can be deleted in self chat",
-                    },
+                    data: "cannot delete self-chat, only messages can be deleted in self chat",
                 },
                 StatusCodes.FORBIDDEN,
                 dbTransaction

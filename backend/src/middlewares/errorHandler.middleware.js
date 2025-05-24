@@ -2,6 +2,7 @@ const response = require("../response");
 const { StatusCodes } = require("http-status-codes");
 
 module.exports.invalidRoute = (req, res) => {
+    console.log("errorHandler.middleware.js: invalidRoute(): error: invalid route");
     return response.error(
         req,
         res,
@@ -11,6 +12,7 @@ module.exports.invalidRoute = (req, res) => {
 };
 
 module.exports.globalErrorHandler = (error, req, res) => {
+    console.log("errorHandler.middleware.js: globalErrorHandler(): error: ", error.data);
     return response.error(
         req,
         res,

@@ -7,10 +7,6 @@ module.exports = {
         country: Joi.string().required(),
     }),
 
-    updateAvatar: Joi.object({
-        file: Joi.object().required(),
-    }),
-
     updatePassword: Joi.object({
         currentPassword: Joi.string().min(6).required(),
         newPassword: Joi.string().min(6).required(),

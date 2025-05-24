@@ -51,7 +51,7 @@ module.exports.register = async (req, res, next) => {
             await commonService.deleteQuery(
                 Users,
                 { email: email },
-                true,
+                false,
                 dbTransaction
             );
         }

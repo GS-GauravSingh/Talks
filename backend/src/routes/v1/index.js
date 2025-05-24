@@ -25,7 +25,7 @@ router.delete("/auth/delete-account", requestValidator(authValidation.deleteAcco
 router.get("/user/me", verifyAuthJwtToken, userControllers.getMe);
 router.get("/users", verifyAuthJwtToken, userControllers.getAllUsers);
 router.patch("/user/me", verifyAuthJwtToken, requestValidator(userValidation.updateMe), userControllers.updateMe); // updated details like bio, jobTitle, and country.
-router.patch("/user/avatar", verifyAuthJwtToken, requestValidator(userValidation.updateAvatar), multerService.upload.single("file"), userControllers.updateAvatar); // updated details like bio, jobTitle, and country.
+router.patch("/user/avatar", verifyAuthJwtToken, multerService.upload.single("file"), userControllers.updateAvatar); // updated details like bio, jobTitle, and country.
 router.patch("/user/password", verifyAuthJwtToken, requestValidator(userValidation.updatePassword), userControllers.updatePassword); 
 
 // ------------------- Protected - Conversation Routes -----------------------
@@ -36,7 +36,7 @@ router.patch("/conversation/:conversationId", verifyAuthJwtToken, requestValidat
 router.delete("/conversation/:conversationId", verifyAuthJwtToken, conversationControllers.deleteConversation);
 
 // ------------------- Protected - Messages Routes ---------------------------
-router.post("/message/:conversationId", verifyAuthJwtToken, requestValidator(messageValidation.sendMessage), multerService.upload.single("file"), messageControllers.sendMessage);
+router.post("/message/:conversationId", verifyAuthJwtToken, multerService.upload.single("file"), requestValidator(messageValidation.sendMessage), messageControllers.sendMessage);
 router.get("/message/:conversationId", verifyAuthJwtToken, messageControllers.getMessageHistory);
 router.delete("/message/:messageId", verifyAuthJwtToken, messageControllers.deleteMessage);
 
