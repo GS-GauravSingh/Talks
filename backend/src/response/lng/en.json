@@ -38,7 +38,7 @@
     "CONVERSATION_DOES_NOT_EXISTS": "Conversation doesn't exists",
     "NO_CONVERSATIONS_FOUND": "User doesn't have any conversations",
     "CONVERSATIONS_FETCHED_SUCCESSFULLY": "Conversations fetched successfully",
-    "CANNOT_UPDATE_ONE_ON_ONE_CONVERSATION": "Cannot update one-on-one conversation",
+    "CANNOT_UPDATE_ONE_ON_ONE_CONVERSATION": "Cannot update self or one-on-one conversations",
     "CONVERSATION_UPDATED_SUCCESSFULLY": "Conversation updated successfully",
     "PERMISSION_DENIED": "Permission denied, you don't have the permission to perform this action",
     "CONVERSATION_DELETED_SUCCESSFULLY": "Conversation deleted successfully",
