@@ -2,6 +2,7 @@ const commonService = require("../services/common.service");
 const response = require("../response");
 const { StatusCodes } = require("http-status-codes");
 const cloudinaryUtils = require("../utils/cloudinary.util");
+const { getPagination } = require("../config/helper");
 const db = require("../models").sequelize;
 
 // GET ME - Get the logged in user details
@@ -18,7 +19,6 @@ module.exports.getMe = async (req, res, next) => {
                 data: {
                     user: {
                         ...JSON.parse(JSON.stringify(user)),
-                        password: null,
                     },
                 },
             },
@@ -42,15 +42,43 @@ module.exports.getAllUsers = async (req, res, next) => {
     const dbTransaction = await db.transaction();
 
     try {
+        const {
+            page,
+            size,
+            sort_by = "createdAt",
+            sort_order = "DESC",
+        } = req.query;
+        const { limit, offset } = getPagination({ page, size });
+        const order = [[sort_by, sort_order]];
         const { Users } = db.models;
-        const users = await commonService.findAllWithCount(Users, {}, []);
+        const users = await commonService.findAllWithCount(
+            Users,
+            {
+                isVerified: true
+            },
+            [
+                "id",
+                "firstname",
+                "lastname",
+                "email",
+                "avatar",
+                "bio",
+                "jobTitle",
+                "country",
+                "isVerified",
+            ],
+            false,
+            limit,
+            order,
+            offset
+        );
         return response.success(
             req,
             res,
             {
                 msgCode: "ALL_USER_DETAILS_FETCHED_SUCCESSFULLY",
                 data: {
-                    users: users
+                    users: users,
                 },
             },
             StatusCodes.OK,
@@ -81,7 +109,10 @@ module.exports.updateMe = async (req, res, next) => {
             return response.error(
                 req,
                 res,
-                { msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY" },
+                {
+                    msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
+                    data: "bio, jobTitle, and country are required",
+                },
                 StatusCodes.BAD_REQUEST,
                 dbTransaction
             );
@@ -89,8 +120,11 @@ module.exports.updateMe = async (req, res, next) => {
 
         // if fields are present, then only update then when field they don't match with the fields in the database.
         if (
+            bio &&
             bio === user.bio &&
+            jobTitle &&
             jobTitle === user.jobTitle &&
+            country &&
             country === user.country
         ) {
             return response.error(
@@ -103,12 +137,34 @@ module.exports.updateMe = async (req, res, next) => {
         }
 
         // update the user's details
-        user.bio = bio;
-        user.jobTitle = jobTitle;
-        user.country = country;
+        if (bio) {
+            user.bio = bio;
+        }
+
+        if (jobTitle) {
+            user.jobTitle = jobTitle;
+        }
+
+        if (country) {
+            user.country = country;
+        }
 
         // save the changes
-        const updatedUser = await commonService.saveRecord(user);
+        const updatedUser = await commonService.saveRecord(
+            user,
+            false,
+            dbTransaction
+        );
+        if (!updatedUser) {
+            return response.error(
+                req,
+                res,
+                { msgCode: "USER_DETAILS_UPDATE_FAILED" },
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                dbTransaction
+            );
+        }
+
         return response.success(
             req,
             res,
@@ -117,7 +173,6 @@ module.exports.updateMe = async (req, res, next) => {
                 data: {
                     user: {
                         ...JSON.parse(JSON.stringify(updatedUser)),
-                        password: null,
                     },
                 },
             },
@@ -173,7 +228,21 @@ module.exports.updateAvatar = async (req, res, next) => {
         user.avatar = avatarURL;
 
         // save the changes
-        const updatedUser = await commonService.saveRecord(user);
+        const updatedUser = await commonService.saveRecord(
+            user,
+            false,
+            dbTransaction
+        );
+        if (!updatedUser) {
+            return response.error(
+                req,
+                res,
+                { msgCode: "USER_DETAILS_UPDATE_FAILED" },
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                dbTransaction
+            );
+        }
+
         return response.success(
             req,
             res,
@@ -182,7 +251,6 @@ module.exports.updateAvatar = async (req, res, next) => {
                 data: {
                     user: {
                         ...JSON.parse(JSON.stringify(updatedUser)),
-                        password: null,
                     },
                 },
             },
@@ -206,18 +274,21 @@ module.exports.updatePassword = async (req, res, next) => {
     const dbTransaction = await db.transaction();
 
     try {
+        const { user } = req;
         const { currentPassword, newPassword } = req.body;
+
         if (!currentPassword || !newPassword) {
             return response.error(
                 req,
                 res,
-                { msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY" },
+                {
+                    msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
+                    data: "currentPassword and newPassword both are required",
+                },
                 StatusCodes.BAD_REQUEST,
                 dbTransaction
             );
         }
-
-        const { user } = req;
 
         // check if the current password provided by the user is correct or not.
         const isPasswordValid = await user.comparePassword(currentPassword);
@@ -247,7 +318,21 @@ module.exports.updatePassword = async (req, res, next) => {
         user.passwordChangedAt = Date.now();
 
         // save the changes
-        const updatedUser = await commonService.saveRecord(user);
+        const updatedUser = await commonService.saveRecord(
+            user,
+            false,
+            dbTransaction
+        );
+        if (!updatedUser) {
+            return response.error(
+                req,
+                res,
+                { msgCode: "USER_DETAILS_UPDATE_FAILED" },
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                dbTransaction
+            );
+        }
+
         return response.success(
             req,
             res,
@@ -256,7 +341,6 @@ module.exports.updatePassword = async (req, res, next) => {
                 data: {
                     user: {
                         ...JSON.parse(JSON.stringify(updatedUser)),
-                        password: null,
                     },
                 },
             },

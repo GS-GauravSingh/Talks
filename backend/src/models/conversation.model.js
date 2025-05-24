@@ -12,8 +12,8 @@ module.exports = (sequelize, DataTypes) => {
         "Conversations",
         {
             id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
             },
 
@@ -28,12 +28,12 @@ module.exports = (sequelize, DataTypes) => {
             },
 
             latestMessageId: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.UUID,
                 allowNull: true,
             },
 
             groupAdminId: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.UUID,
                 allowNull: true,
             },
 
@@ -43,11 +43,21 @@ module.exports = (sequelize, DataTypes) => {
                     "https://res.cloudinary.com/df7wvngsb/image/upload/v1747307232/group-chat_i9valz.png",
                 allowNull: false, // optional - used only for group chats
             },
+
+            participants: {
+                type: DataTypes.ARRAY(DataTypes.UUID),
+                allowNull: false,
+            },
         },
         {
             tableName: "conversations",
             timestamps: true,
             paranoid: true,
+            indexes: [
+                { fields: ["latestMessageId"] },
+                { fields: ["groupAdminId"] },
+                { fields: ["participants"] },
+            ],
         }
     );
 
@@ -65,8 +75,6 @@ module.exports = (sequelize, DataTypes) => {
         ConversationModel.hasMany(models.Messages, {
             foreignKey: "conversationId", // references the `conversationId` column in the `Messages` table.
         });
-
-        
     };
 
     return ConversationModel;

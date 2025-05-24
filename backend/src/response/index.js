@@ -56,6 +56,13 @@ function getUserPreferredLanguage(acceptLanguageHeader) {
     return "en";
 }
 
+/**
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Object} error 
+ * @param {Number} httpStatusCode 
+ * @param {Object} dbTransaction 
+ */
 module.exports.success = async function (
     req,
     res,
@@ -102,6 +109,13 @@ module.exports.success = async function (
     }
 };
 
+/**
+ * @param {Object} req 
+ * @param {Object} res 
+ * @param {Object} error 
+ * @param {Number} httpStatusCode 
+ * @param {Object} dbTransaction 
+ */
 module.exports.error = async function (
     req,
     res,

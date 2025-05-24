@@ -5,7 +5,9 @@ const { verifyJWT } = require("../utils/jsonWebToken.util");
 const db = require("../models").sequelize;
 
 module.exports.verifyAuthJwtToken = async (req, res, next) => {
+    const { Users } = db.models;
     let token;
+
     if (
         req.headers.authorization &&
         req.headers.authorization.startsWith("Bearer")
@@ -16,7 +18,9 @@ module.exports.verifyAuthJwtToken = async (req, res, next) => {
     }
 
     if (!token) {
-        console.log("verifyAuthToken.middleware.js: verifyAuthJwtToken(): error: No token provided");
+        console.log(
+            "verifyAuthToken.middleware.js: verifyAuthJwtToken(): error: No token provided"
+        );
         return response.error(
             req,
             res,
@@ -27,7 +31,9 @@ module.exports.verifyAuthJwtToken = async (req, res, next) => {
 
     const decoded = verifyJWT(token);
     if (!decoded) {
-        console.log("verifyAuthToken.middleware.js: verifyAuthJwtToken(): error: Invalid token");
+        console.log(
+            "verifyAuthToken.middleware.js: verifyAuthJwtToken(): error: Invalid token"
+        );
         return response.error(
             req,
             res,
@@ -36,10 +42,26 @@ module.exports.verifyAuthJwtToken = async (req, res, next) => {
         );
     }
 
-    const { Users } = db.models;
-    const user = await commonService.findByPrimaryKey(Users, decoded.id, [], true); 
+    const user = await commonService.findByPrimaryKey(
+        Users,
+        decoded.id,
+        [
+            "id",
+            "firstname",
+            "lastname",
+            "email",
+            "avatar",
+            "bio",
+            "jobTitle",
+            "country",
+            "isVerified",
+        ],
+        true
+    );
     if (!user) {
-        console.log("verifyAuthToken.middleware.js: verifyAuthJwtToken(): error: User not found");
+        console.log(
+            "verifyAuthToken.middleware.js: verifyAuthJwtToken(): error: User not found"
+        );
         return response.error(
             req,
             res,
@@ -49,7 +71,9 @@ module.exports.verifyAuthJwtToken = async (req, res, next) => {
     }
 
     if (!user.isTokenValidAfterPasswordChanged(decoded.iat)) {
-        console.log("verifyAuthToken.middleware.js: verifyAuthJwtToken(): error: Token is not valid after password change");
+        console.log(
+            "verifyAuthToken.middleware.js: verifyAuthJwtToken(): error: Token is not valid after password change"
+        );
         return response.error(
             req,
             res,

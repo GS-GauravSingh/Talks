@@ -6,11 +6,18 @@
  * createNewRecord(): This function is used to create a new record in the database.
  * @param {object} model - The model to be used for creating a new record.
  * @param {object} data - The data to be used for creating a new record.
+ * @param {boolean} raw - Whether to return the raw data from the database or not.
+ * @param {object} dbTransaction - The database transaction object.
  * @returns {object} - The record created in the database.
  */
-module.exports.createNewRecord = async (model, data, raw = false) => {
+module.exports.createNewRecord = async (
+    model,
+    data,
+    raw = false,
+    dbTransaction
+) => {
     try {
-        const record = await model.create(data);
+        const record = await model.create(data, { transaction: dbTransaction });
         if (raw) {
             return record;
         }
@@ -83,7 +90,7 @@ module.exports.findAllWithCount = async (
                     attributes,
                 }),
             ...(limit !== undefined && { limit }),
-            ...(order !== undefined && { order }),
+            ...(order !== undefined && order.length > 0 && { order }),
             ...(offset !== undefined && { offset }),
         });
 
@@ -124,6 +131,7 @@ module.exports.findByPrimaryKey = async (
             return record;
         }
 
+        console.log(record);
         return record ? JSON.parse(JSON.stringify(record)) : false;
     } catch (error) {
         console.log("common.js: findByPrimaryKey(): error: ", error);
@@ -134,11 +142,19 @@ module.exports.findByPrimaryKey = async (
 /**
  * saveRecord(): This function is used to save a record in the database.
  * @param {object} record - The record to be saved in the database.
+ * @param {boolean} raw - Whether to return the raw data from the database or not.
+ * @param {object} dbTransaction - The database transaction object.
  * @returns {object} - The record saved in the database.
  */
-module.exports.saveRecord = async (modelInstance, raw = false) => {
+module.exports.saveRecord = async (
+    modelInstance,
+    raw = false,
+    dbTransaction
+) => {
     try {
-        const savedRecord = await modelInstance.save();
+        const savedRecord = await modelInstance.save({
+            transaction: dbTransaction,
+        });
         if (raw) {
             return savedRecord;
         }
@@ -154,11 +170,21 @@ module.exports.saveRecord = async (modelInstance, raw = false) => {
  * @param {Object} model - The model to delete a record from.
  * @param {Object} condition - The condition to identify the record to delete.
  * @param {boolean} [force=false] - Whether to force the deletion or not.
+ * @param {Object} dbTransaction - The database transaction object.
  * @returns {Promise<number|boolean>} - The number of deleted records or false if an error occurs.
  */
-exports.deleteQuery = async (model, condition, force = false) => {
+exports.deleteQuery = async (
+    model,
+    condition,
+    force = false,
+    dbTransaction
+) => {
     try {
-        const records = await model.destroy({ where: condition, force });
+        const records = await model.destroy({
+            where: condition,
+            transaction: dbTransaction,
+            force,
+        });
         return records ? JSON.parse(JSON.stringify(records)) : false;
     } catch (error) {
         console.log("common.js: deleteQuery(): error: ", error);
@@ -205,7 +231,7 @@ exports.findAllWithGroupByAndAggregateFunction = async (
                 having: groupCondition,
             }),
             ...(limit !== undefined && { limit }),
-            ...(order !== undefined && { order }),
+            ...(order !== undefined && order.length > 0 && { order }),
             ...(offset !== undefined && { offset }),
         });
 
@@ -228,11 +254,14 @@ exports.findAllWithGroupByAndAggregateFunction = async (
  *
  * @param {Object} model - The model to be used for creating a new record.
  * @param {Array} data - array of objects to be added in the database.
+ * @param {Object} dbTransaction - The database transaction object.
  * @returns { Array } - The records added in the database.
  */
-exports.bulkAdd = async (model, data) => {
+exports.bulkAdd = async (model, data, dbTransaction) => {
     try {
-        const records = await model.bulkCreate(data);
+        const records = await model.bulkCreate(data, {
+            transaction: dbTransaction,
+        });
         return records ? JSON.parse(JSON.stringify(records)) : false;
     } catch (error) {
         console.log("common.js: bulkAdd(): error: ", error);
@@ -242,7 +271,7 @@ exports.bulkAdd = async (model, data) => {
 
 /**
  * findAllWithOneAssociatedModel(): This function is used to find all records in the database with one associated model.
- * 
+ *
  * @param {Object} model - The model to be used for querying the database.
  * @param {Object} associatedModel - The associated model to be used for querying the database.
  * @param {Object} condition - The condition to be used for querying the database.
@@ -285,7 +314,7 @@ exports.findAllWithOneAssociatedModel = async (
                 },
             ],
             ...(limit !== undefined && { limit }),
-            ...(order !== undefined && { order }),
+            ...(order !== undefined && order.length > 0 && { order }),
             ...(offset !== undefined && { offset }),
         });
 
