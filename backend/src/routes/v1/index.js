@@ -2,10 +2,12 @@ const express = require("express");
 const authControllers = require("../../controllers/auth.controllers");
 const userControllers = require("../../controllers/user.controllers");
 const conversationControllers = require("../../controllers/conversation.controllers");
+const messageControllers = require("../../controllers/message.controllers");
 const { requestValidator } = require("../../middlewares/requestValidator.middleware");
 const authValidation = require("../../validations/auth.validation");
 const userValidation = require("../../validations/user.validation");
 const conversationValidation = require("../../validations/conversation.validation");
+const messageValidation = require("../../validations/message.validation");
 const { verifyAuthJwtToken } = require("../../middlewares/verifyAuthToken.middleware");
 const multerService = require("../../services/multer.service");
 
@@ -32,5 +34,10 @@ router.get("/conversation/:conversationId", verifyAuthJwtToken, conversationCont
 router.get("/conversations", verifyAuthJwtToken, conversationControllers.getAllConversations);
 router.patch("/conversation/:conversationId", verifyAuthJwtToken, requestValidator(conversationValidation.updateConversation), multerService.upload.single("file"), conversationControllers.updateConversation);
 router.delete("/conversation/:conversationId", verifyAuthJwtToken, conversationControllers.deleteConversation);
+
+// ------------------- Protected - Messages Routes ---------------------------
+router.post("/message/:conversationId", verifyAuthJwtToken, requestValidator(messageValidation.sendMessage), multerService.upload.single("file"), messageControllers.sendMessage);
+router.get("/message/:conversationId", verifyAuthJwtToken, messageControllers.getMessageHistory);
+router.delete("/message/:messageId", verifyAuthJwtToken, messageControllers.deleteMessage);
 
 module.exports = router;

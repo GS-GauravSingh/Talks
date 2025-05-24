@@ -23,6 +23,7 @@
     "USER_DETAILS_UPDATED_SUCCESSFULLY": "User details updated successfully",
     "NO_CHANGES_TO_UPDATE": "No changes to update",
     "ERROR_UPLOADING_AVATAR_TO_CLOUDINARY": "Error uploading avatar to cloudinary, please try again later",
+    "ERROR_UPLOADING_IMAGE_TO_CLOUDINARY": "Error uploading image to cloudinary, please try again later",
     "FILE_NOT_FOUND": "File not found, please try again later",
     "INCORRECT_CURRENT_PASSWORD": "Incorrect current password, please try again",
     "FILE_UPLOAD_ERROR": "Error uploading file",
@@ -42,5 +43,9 @@
     "PERMISSION_DENIED": "Permission denied, you don't have the permission to perform this action",
     "CONVERSATION_DELETED_SUCCESSFULLY": "Conversation deleted successfully",
     "CONVERSATION_UPDATE_FAILED": "Error updating conversation, please try again later",
-    "USER_DETAILS_UPDATE_FAILED": "Error updating user details, please try again later"
+    "USER_DETAILS_UPDATE_FAILED": "Error updating user details, please try again later",
+    "MESSAGES_FETCHED_SUCCESSFULLY": "Messages fetched successfully",
+    "MESSAGE_DOES_NOT_EXISTS": "Message doesn't exists",
+    "MESSAGES_DELETED_SUCCESSFULLY": "Message deleted successfully",
+    "MESSAGES_SENT_SUCCESSFULLY": "Message sent successfully"
 }

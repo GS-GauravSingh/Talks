@@ -10,7 +10,7 @@ const commonService = require("../services/common.service");
 
 // REGISTER NEW USER
 module.exports.register = async (req, res, next) => {
-    const dbTrasaction = await db.transaction();
+    const dbTransaction = await db.transaction();
 
     try {
         const { Users } = db.models;
@@ -25,7 +25,7 @@ module.exports.register = async (req, res, next) => {
                     data: "firstname, email, and password are required",
                 },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -41,7 +41,7 @@ module.exports.register = async (req, res, next) => {
                     msgCode: "ACCOUNT_ALREADY_EXISTS",
                 },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -52,7 +52,7 @@ module.exports.register = async (req, res, next) => {
                 Users,
                 { email: email },
                 true,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -68,7 +68,7 @@ module.exports.register = async (req, res, next) => {
                 password: password,
             },
             false,
-            dbTrasaction
+            dbTransaction
         );
         if (!newUser) {
             return response.error(
@@ -79,11 +79,11 @@ module.exports.register = async (req, res, next) => {
                     data: "Failed to register new user, please try again later",
                 },
                 StatusCodes.INTERNAL_SERVER_ERROR,
-                dbTrasaction
+                dbTransaction
             );
         }
         
-        await dbTrasaction.commit(); // close the transaction
+        await dbTransaction.commit(); // close the transaction
         req.userId = newUser.id; // attach the user's id to the request object for further use.
         console.log("new user created: ", newUser);
         next(); // calls the next middleware
@@ -94,14 +94,14 @@ module.exports.register = async (req, res, next) => {
             res,
             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTrasaction
+            dbTransaction
         );
     }
 };
 
 // SEND OTP
 module.exports.sendOTP = async (req, res, next) => {
-    const dbTrasaction = await db.transaction();
+    const dbTransaction = await db.transaction();
 
     try {
         const { Users } = db.models;
@@ -123,7 +123,7 @@ module.exports.sendOTP = async (req, res, next) => {
                     msgCode: "ACCOUNT_DOES_NOT_EXISTS",
                 },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -142,7 +142,7 @@ module.exports.sendOTP = async (req, res, next) => {
         const updatedUser = await commonService.saveRecord(
             user,
             false,
-            dbTrasaction
+            dbTransaction
         ); // save the changes - otp will be hased automatically due to the `beforeUpdate` hook.
         
         if (!updatedUser) {
@@ -153,7 +153,7 @@ module.exports.sendOTP = async (req, res, next) => {
                     msgCode: "USER_DETAILS_UPDATE_FAILED",
                 },
                 StatusCodes.INTERNAL_SERVER_ERROR,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -177,7 +177,7 @@ module.exports.sendOTP = async (req, res, next) => {
                     msgCode: "ERROR_SENDING_OTP_EMAIL",
                 },
                 StatusCodes.INTERNAL_SERVER_ERROR,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -186,7 +186,7 @@ module.exports.sendOTP = async (req, res, next) => {
             res,
             { msgCode: "OTP_SENT_SUCCESSFULLY" },
             StatusCodes.OK,
-            dbTrasaction
+            dbTransaction
         );
     } catch (error) {
         console.log("auth.controllers.js: sendOTP(): error: ", error);
@@ -195,14 +195,14 @@ module.exports.sendOTP = async (req, res, next) => {
             res,
             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTrasaction
+            dbTransaction
         );
     }
 };
 
 // VERIFY OTP
 module.exports.verifyOTP = async (req, res, next) => {
-    const dbTrasaction = await db.transaction();
+    const dbTransaction = await db.transaction();
 
     try {
         const { Users } = db.models;
@@ -217,7 +217,7 @@ module.exports.verifyOTP = async (req, res, next) => {
                     data: "email and otp are required",
                 },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -236,7 +236,7 @@ module.exports.verifyOTP = async (req, res, next) => {
                 res,
                 { msgCode: "ACCOUNT_DOES_NOT_EXISTS" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -247,7 +247,7 @@ module.exports.verifyOTP = async (req, res, next) => {
                 res,
                 { msgCode: "ACCOUNT_ALREADY_EXISTS" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -259,7 +259,7 @@ module.exports.verifyOTP = async (req, res, next) => {
                 res,
                 { msgCode: "INVALID_OTP" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -270,7 +270,7 @@ module.exports.verifyOTP = async (req, res, next) => {
                 res,
                 { msgCode: "OTP_EXPIRED" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -280,7 +280,7 @@ module.exports.verifyOTP = async (req, res, next) => {
         const updatedUser = await commonService.saveRecord(
             user,
             false,
-            dbTrasaction
+            dbTransaction
         );
         if (!updatedUser) {
             return response.error(
@@ -290,7 +290,7 @@ module.exports.verifyOTP = async (req, res, next) => {
                     msgCode: "USER_DETAILS_UPDATE_FAILED",
                 },
                 StatusCodes.INTERNAL_SERVER_ERROR,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -314,7 +314,7 @@ module.exports.verifyOTP = async (req, res, next) => {
                 },
             },
             StatusCodes.CREATED,
-            dbTrasaction
+            dbTransaction
         );
     } catch (error) {
         console.log("auth.controllers.js: verifyOTP(): error: ", error);
@@ -323,14 +323,14 @@ module.exports.verifyOTP = async (req, res, next) => {
             res,
             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTrasaction
+            dbTransaction
         );
     }
 };
 
 // RE-SEND OTP
 module.exports.resendOTP = async (req, res, next) => {
-    const dbTrasaction = await db.transaction();
+    const dbTransaction = await db.transaction();
 
     try {
         const { Users } = db.models;
@@ -350,7 +350,7 @@ module.exports.resendOTP = async (req, res, next) => {
                 res,
                 { msgCode: "ACCOUNT_DOES_NOT_EXISTS" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -361,7 +361,7 @@ module.exports.resendOTP = async (req, res, next) => {
                 res,
                 { msgCode: "ACCOUNT_ALREADY_EXISTS" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -372,7 +372,7 @@ module.exports.resendOTP = async (req, res, next) => {
                 res,
                 { msgCode: "OTP_NOT_EXPIRED" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -390,7 +390,7 @@ module.exports.resendOTP = async (req, res, next) => {
         const updatedUser = await commonService.saveRecord(
             user,
             false,
-            dbTrasaction
+            dbTransaction
         ); // save the changes - otp will be hased automatically due to the `beforeUpdate` hook.
         if (!updatedUser) {
             return response.error(
@@ -400,7 +400,7 @@ module.exports.resendOTP = async (req, res, next) => {
                     msgCode: "USER_DETAILS_UPDATE_FAILED",
                 },
                 StatusCodes.INTERNAL_SERVER_ERROR,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -422,7 +422,7 @@ module.exports.resendOTP = async (req, res, next) => {
                 res,
                 { msgCode: "ERROR_SENDING_OTP_EMAIL" },
                 StatusCodes.INTERNAL_SERVER_ERROR,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -431,7 +431,7 @@ module.exports.resendOTP = async (req, res, next) => {
             res,
             { msgCode: "OTP_SENT_SUCCESSFULLY" },
             StatusCodes.OK,
-            dbTrasaction
+            dbTransaction
         );
     } catch (error) {
         console.log("auth.controllers.js: resendOTP(): error: ", error);
@@ -440,14 +440,14 @@ module.exports.resendOTP = async (req, res, next) => {
             res,
             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTrasaction
+            dbTransaction
         );
     }
 };
 
 // LOGIN
 module.exports.login = async (req, res, next) => {
-    const dbTrasaction = await db.transaction();
+    const dbTransaction = await db.transaction();
 
     try {
         const { Users } = db.models;
@@ -459,7 +459,7 @@ module.exports.login = async (req, res, next) => {
                 res,
                 { msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -477,7 +477,7 @@ module.exports.login = async (req, res, next) => {
                 res,
                 { msgCode: "ACCOUNT_DOES_NOT_EXISTS" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -490,7 +490,7 @@ module.exports.login = async (req, res, next) => {
                     data: "Please verify your account first, re-register to verify your account",
                 },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -501,7 +501,7 @@ module.exports.login = async (req, res, next) => {
                 res,
                 { msgCode: "INCORRECT_PASSWORD" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -528,7 +528,7 @@ module.exports.login = async (req, res, next) => {
                 },
             },
             StatusCodes.OK,
-            dbTrasaction
+            dbTransaction
         );
     } catch (error) {
         console.log("auth.controllers.js: login(): error: ", error);
@@ -537,14 +537,14 @@ module.exports.login = async (req, res, next) => {
             res,
             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTrasaction
+            dbTransaction
         );
     }
 };
 
 // LOGOUT
 module.exports.logout = async (req, res, next) => {
-    const dbTrasaction = await db.transaction();
+    const dbTransaction = await db.transaction();
 
     try {
         res.cookie("jwt", "", { maxAge: 0 });
@@ -553,7 +553,7 @@ module.exports.logout = async (req, res, next) => {
             res,
             { msgCode: "LOGOUT_SUCCESSFULL" },
             StatusCodes.OK,
-            dbTrasaction
+            dbTransaction
         );
     } catch (error) {
         console.log("auth.controllers.js: logout(): error: ", error);
@@ -562,14 +562,14 @@ module.exports.logout = async (req, res, next) => {
             res,
             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTrasaction
+            dbTransaction
         );
     }
 };
 
 // DELETE ACCOUNT
 module.exports.deleteAccount = async (req, res, next) => {
-    const dbTrasaction = await db.transaction();
+    const dbTransaction = await db.transaction();
 
     try {
         const { Users } = db.models;
@@ -579,7 +579,7 @@ module.exports.deleteAccount = async (req, res, next) => {
             Users,
             { id: userId },
             true,
-            dbTrasaction
+            dbTransaction
         );
         if (!accountDeleted) {
             return response.error(
@@ -587,7 +587,7 @@ module.exports.deleteAccount = async (req, res, next) => {
                 res,
                 { msgCode: "ACCOUNT_DOES_NOT_EXISTS" },
                 StatusCodes.BAD_REQUEST,
-                dbTrasaction
+                dbTransaction
             );
         }
 
@@ -596,7 +596,7 @@ module.exports.deleteAccount = async (req, res, next) => {
             res,
             { msgCode: "ACCOUNT_DELETED_SUCCESSFULLY" },
             StatusCodes.OK,
-            dbTrasaction
+            dbTransaction
         );
     } catch (error) {
         console.log("auth.controllers.js: deleteAccount(): error: ", error);
@@ -605,7 +605,7 @@ module.exports.deleteAccount = async (req, res, next) => {
             res,
             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
             StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTrasaction
+            dbTransaction
         );
     }
 };
