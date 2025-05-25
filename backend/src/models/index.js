@@ -54,7 +54,7 @@ sequelize
     .then(() => {
         console.log("All models synced successfully!");
     })
-    .catch(() => {
+    .catch((error) => {
         console.error("Error while syncing models: ", error);
     });
 
