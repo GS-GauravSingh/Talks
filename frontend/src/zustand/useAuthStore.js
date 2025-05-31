@@ -22,7 +22,7 @@ const useAuthStore = create((set, get) => ({
 			set({ isCheckingAuth: true });
 
 			const response = await axiosInstance.get("/user/me");
-			set({ authUser: response.data });
+			set({ authUser: response.data?.result?.user });
 		} catch (error) {
 			console.log(
 				"useAuthStore(): error checking authentication status: error: ",
@@ -208,6 +208,39 @@ const useAuthStore = create((set, get) => ({
 			set({ isLoggingOut: false });
 		} finally {
 			set({ isLoggingOut: false });
+		}
+	},
+
+	// UPDATE USER AVATAR or Profile Pic
+	updateUserAvatar: async (file) => {
+		const toastId = toast.loading("Updating...");
+
+		try {
+			set({ isUpdatingUser: true });
+			const response = await axiosInstance.patch("/user/avatar", file, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			});
+
+			toast.success(response.data.message, {
+				id: toastId,
+			});
+		} catch (error) {
+			console.log("updateUserAvatar(): error: ", error);
+
+			toast.error(
+				error?.response?.data?.message ||
+					error?.message ||
+					"Something went wrong",
+				{
+					id: toastId,
+				}
+			);
+
+			set({ isUpdatingUser: false });
+		} finally {
+			set({ isUpdatingUser: false });
 		}
 	},
 }));
