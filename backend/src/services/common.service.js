@@ -6,7 +6,7 @@
  * createNewRecord(): This function is used to create a new record in the database.
  * @param {object} model - The model to be used for creating a new record.
  * @param {object} data - The data to be used for creating a new record.
- * @param {boolean} raw - Whether to return the raw data from the database or not.
+ * @param {boolean} raw - Default value false, If true, returns plain JavaScript objects instead of Sequelize instances.
  * @param {object} dbTransaction - The database transaction object.
  * @returns {object} - The record created in the database.
  */
@@ -21,10 +21,10 @@ module.exports.createNewRecord = async (
         if (raw) {
             return record;
         }
-        return record ? JSON.parse(JSON.stringify(record)) : false;
+        return record ? JSON.parse(JSON.stringify(record)) : null;
     } catch (error) {
         console.log("common.js: createNewRecord(): error: ", error);
-        return false;
+        throw error;
     }
 };
 
@@ -33,7 +33,7 @@ module.exports.createNewRecord = async (
  * @param {object} model - The model to be used for querying the database.
  * @param {object} condition - The condition to be used for querying the database.
  * @param {object} attributes - The attributes to be returned from the database.
- * @param {boolean} raw - Whether to return the raw data from the database or not.
+ * @param {boolean} raw - Default value false, If true, returns plain JavaScript objects instead of Sequelize instances.
  * @returns {object} - The record found in the database.
  */
 module.exports.findByCondition = async (
@@ -55,10 +55,10 @@ module.exports.findByCondition = async (
             return record;
         }
 
-        return record ? JSON.parse(JSON.stringify(record)) : false;
+        return record ? JSON.parse(JSON.stringify(record)) : null;
     } catch (error) {
         console.log("common.js: findByCondition(): error: ", error);
-        return false;
+        throw error;
     }
 };
 
@@ -67,7 +67,7 @@ module.exports.findByCondition = async (
  * @param {object} model - The model to be used for querying the database.
  * @param {object} condition - The condition to be used for querying the database.
  * @param {object} attributes - The attributes to be returned from the database.
- * @param {boolean} raw - Whether to return the raw data from the database or not.
+ * @param {boolean} raw - Default value false, If true, returns plain JavaScript objects instead of Sequelize instances.
  * @param {number} limit - The number of records to be returned.
  * @param {array} order - The order in which the records should be returned.
  * @param {number} offset - The number of records to be skipped.
@@ -98,10 +98,10 @@ module.exports.findAllWithCount = async (
             return records;
         }
 
-        return records ? JSON.parse(JSON.stringify(records)) : false;
+        return records ? JSON.parse(JSON.stringify(records)) : null;
     } catch (error) {
         console.log("common.js: findAllByCondition(): error: ", error);
-        return false;
+        throw error;
     }
 };
 
@@ -110,7 +110,7 @@ module.exports.findAllWithCount = async (
  * @param {object} model - The model to be used for querying the database.
  * @param {number} id - The primary key of the record to be found.
  * @param {object} attributes - The attributes to be returned from the database.
- * @param {boolean} raw - Whether to return the raw data from the database or not.
+ * @param {boolean} raw - Default value false, If true, returns plain JavaScript objects instead of Sequelize instances.
  * @returns {object} - The record found in the database.
  */
 module.exports.findByPrimaryKey = async (
@@ -131,18 +131,17 @@ module.exports.findByPrimaryKey = async (
             return record;
         }
 
-        console.log(record);
-        return record ? JSON.parse(JSON.stringify(record)) : false;
+        return record ? JSON.parse(JSON.stringify(record)) : null;
     } catch (error) {
         console.log("common.js: findByPrimaryKey(): error: ", error);
-        return false;
+        throw error;
     }
 };
 
 /**
  * saveRecord(): This function is used to save a record in the database.
  * @param {object} record - The record to be saved in the database.
- * @param {boolean} raw - Whether to return the raw data from the database or not.
+ * @param {boolean} raw - Default value false, If true, returns plain JavaScript objects instead of Sequelize instances.
  * @param {object} dbTransaction - The database transaction object.
  * @returns {object} - The record saved in the database.
  */
@@ -158,10 +157,10 @@ module.exports.saveRecord = async (
         if (raw) {
             return savedRecord;
         }
-        return savedRecord ? JSON.parse(JSON.stringify(savedRecord)) : false;
+        return savedRecord ? JSON.parse(JSON.stringify(savedRecord)) : null;
     } catch (error) {
         console.log("common.js: saveRecord(): error: ", error);
-        return false;
+        throw error;
     }
 };
 
@@ -185,10 +184,10 @@ exports.deleteQuery = async (
             transaction: dbTransaction,
             force,
         });
-        return records ? JSON.parse(JSON.stringify(records)) : false;
+        return records ? JSON.parse(JSON.stringify(records)) : null;
     } catch (error) {
         console.log("common.js: deleteQuery(): error: ", error);
-        return false;
+        throw error;
     }
 };
 
@@ -239,13 +238,13 @@ exports.findAllWithGroupByAndAggregateFunction = async (
             return records;
         }
 
-        return records ? JSON.parse(JSON.stringify(records)) : false;
+        return records ? JSON.parse(JSON.stringify(records)) : null;
     } catch (error) {
         console.log(
             "common.js: findAllByConditionWithAggregateFunction(): error: ",
             error
         );
-        return false;
+        throw error;
     }
 };
 
@@ -262,10 +261,10 @@ exports.bulkAdd = async (model, data, dbTransaction) => {
         const records = await model.bulkCreate(data, {
             transaction: dbTransaction,
         });
-        return records ? JSON.parse(JSON.stringify(records)) : false;
+        return records ? JSON.parse(JSON.stringify(records)) : null;
     } catch (error) {
         console.log("common.js: bulkAdd(): error: ", error);
-        return false;
+        throw error;
     }
 };
 
@@ -278,7 +277,7 @@ exports.bulkAdd = async (model, data, dbTransaction) => {
  * @param {Object} associatedModelCondition - The condition to be used for querying the associated model.
  * @param {Array} attributes - The attributes to be returned from the database.
  * @param {Array} associatedModelAttributes - The attributes to be returned from the associated model.
- * @param {Boolean} raw - Whether to return the raw data from the database or not.
+ * @param {boolean} raw - Default value false, If true, returns plain JavaScript objects instead of Sequelize instances.
  * @param {Number} limit - The number of records to be returned.
  * @param {Array} order - The order in which the records should be returned.
  * @param {Number} offset - The number of records to be skipped.
@@ -322,12 +321,35 @@ exports.findAllWithOneAssociatedModel = async (
             return records;
         }
 
-        return records ? JSON.parse(JSON.stringify(records)) : false;
+        return records ? JSON.parse(JSON.stringify(records)) : null;
     } catch (error) {
         console.log(
             "common.js: findAllWithOneAssociatedModel(): error: ",
             error
         );
-        return false;
+        throw error;
+    }
+};
+
+/**
+ * Updates a record in a model based on a condition.
+ * @param {Object} model - The model to update a record in.
+ * @param {Object} data - The updated data for the record.
+ * @param {Object} condition - The condition to identify the record to update.
+ * @param {Object} transaction - The transaction object for the database operation.
+ * @returns {Promise<Object|boolean>} - The updated record or false if no rows were updated.
+ */
+exports.updateRecords = async (model, data, condition, dbTransaction) => {
+    try {
+        const result = await model.update(data, {
+            where: condition,
+            transaction: dbTransaction,
+            returning: true, // in an update() or bulkCreate() or destroy() operation, it tells Sequelize to return the updated (or created/deleted) records as part of the result.
+        });
+
+        return result ? JSON.parse(JSON.stringify(result)) : null;
+    } catch (error) {
+        console.log("common.js: updateData(): error: ", error);
+        throw error;
     }
 };

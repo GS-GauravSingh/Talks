@@ -12,31 +12,28 @@ module.exports.createConversation = async (req, res, next) => {
 
     try {
         const { user } = req; // logged in user
-        const { userIds, name, isGroupChat: initialIsGroupChat } = req.body;
-        const { Conversations, UserConversations, Users } = db.models;
+        const { userId } = req.body;
+        const { Conversations, UserConversations } = db.models;
+
+        if (!userId) {
+            return response.error(
+                req,
+                res,
+                {
+                    msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
+                    data: "userId is required",
+                },
+                StatusCodes.BAD_REQUEST,
+                dbTransaction
+            );
+        }
 
         // check if the conversation already exists or not.
-        // just have to figure out where all users are part of the same conversation inculuding the current user.
-        const uniqueUserIds = new Set(userIds);
-        uniqueUserIds.add(user.id);
-
-        const allUserIds = [...uniqueUserIds];
-        const isGroupChat = allUserIds.length > 2 || initialIsGroupChat;
-        const grpName = isGroupChat
-            ? name
-                ? name
-                : `${Date.now()}`
-            : allUserIds.length === 1
-              ? "self"
-              : allUserIds.length === 2
-                ? "one-to-one"
-                : null;
-
-        // check if the conversation already exists or not.
+        const participants = [userId, user.id].sort();
         const isConversationAlreadyExists = await commonService.findByCondition(
             Conversations,
             {
-                participants: allUserIds,
+                participants,
             }
         );
         if (isConversationAlreadyExists) {
@@ -56,10 +53,7 @@ module.exports.createConversation = async (req, res, next) => {
         const newConversation = await commonService.createNewRecord(
             Conversations,
             {
-                name: grpName,
-                isGroupChat: isGroupChat,
-                groupAdminId: isGroupChat ? user.id : null,
-                participants: allUserIds,
+                participants,
             },
             false,
             dbTransaction
@@ -79,7 +73,7 @@ module.exports.createConversation = async (req, res, next) => {
         }
 
         // store the mapping, that all users are part of the new conversation.
-        const userToConversation = allUserIds.map((userId) => {
+        const userToConversation = participants.map((userId) => {
             return {
                 userId: userId,
                 conversationId: newConversation.id,
@@ -136,7 +130,7 @@ module.exports.getConversation = async (req, res, next) => {
     try {
         const { user } = req;
         const { conversationId } = req.params;
-        const { Conversations, UserConversations, Users } = db.models;
+        const { Conversations, Users } = db.models;
 
         const conversation = await commonService.findByCondition(
             Conversations,
@@ -214,7 +208,7 @@ module.exports.getAllConversations = async (req, res, next) => {
         const { limit, offset } = getPagination({ page, size });
         const order = [[sort_by, sort_order]];
         const { user } = req;
-        const { Conversations, UserConversations, Users } = db.models;
+        const { Conversations, Users } = db.models;
 
         const conversations = await commonService.findAllWithCount(
             Conversations,
@@ -240,7 +234,7 @@ module.exports.getAllConversations = async (req, res, next) => {
             );
         }
 
-        const conversationIds = conversations.rows.map((conversation) => {
+        const conversationIds = conversations.rows?.map((conversation) => {
             return conversation.id;
         });
 
@@ -291,250 +285,250 @@ module.exports.getAllConversations = async (req, res, next) => {
 };
 
 // UPDATE CONVERSATION - Update a conversation
-module.exports.updateConversation = async (req, res, next) => {
-    const dbTransaction = await db.transaction();
+// module.exports.updateConversation = async (req, res, next) => {
+//     const dbTransaction = await db.transaction();
 
-    try {
-        const { conversationId } = req.params;
-        const { name } = req.body;
-        const fileObj = req.file;
-        const { user } = req;
-        const { Conversations } = db.models;
+//     try {
+//         const { conversationId } = req.params;
+//         const { name } = req.body;
+//         const fileObj = req.file;
+//         const { user } = req;
+//         const { Conversations } = db.models;
 
-        if (!name && !fileObj) {
-            return response.error(
-                req,
-                res,
-                {
-                    msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
-                    data: "name or avatar atleast one of them is required",
-                },
-                StatusCodes.BAD_REQUEST,
-                dbTransaction
-            );
-        }
+//         if (!name && !fileObj) {
+//             return response.error(
+//                 req,
+//                 res,
+//                 {
+//                     msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
+//                     data: "name or avatar atleast one of them is required",
+//                 },
+//                 StatusCodes.BAD_REQUEST,
+//                 dbTransaction
+//             );
+//         }
 
-        const conversation = await commonService.findByCondition(
-            Conversations,
-            {
-                id: conversationId,
-            },
-            [],
-            true
-        );
-        if (!conversation) {
-            return response.error(
-                req,
-                res,
-                { msgCode: "CONVERSATION_DOES_NOT_EXISTS" },
-                StatusCodes.BAD_REQUEST,
-                dbTransaction
-            );
-        }
+//         const conversation = await commonService.findByCondition(
+//             Conversations,
+//             {
+//                 id: conversationId,
+//             },
+//             [],
+//             true
+//         );
+//         if (!conversation) {
+//             return response.error(
+//                 req,
+//                 res,
+//                 { msgCode: "CONVERSATION_DOES_NOT_EXISTS" },
+//                 StatusCodes.BAD_REQUEST,
+//                 dbTransaction
+//             );
+//         }
 
-        // check if the conversation is a group chat or not.
-        if (!conversation.isGroupChat) {
-            return response.error(
-                req,
-                res,
-                { msgCode: "CANNOT_UPDATE_ONE_ON_ONE_CONVERSATION" },
-                StatusCodes.BAD_REQUEST,
-                dbTransaction
-            );
-        }
+//         // check if the conversation is a group chat or not.
+//         if (!conversation.isGroupChat) {
+//             return response.error(
+//                 req,
+//                 res,
+//                 { msgCode: "CANNOT_UPDATE_ONE_ON_ONE_CONVERSATION" },
+//                 StatusCodes.BAD_REQUEST,
+//                 dbTransaction
+//             );
+//         }
 
-        // check if the logged in user is the admin of the group or not.
-        if (conversation.groupAdminId !== user.id) {
-            return response.error(
-                req,
-                res,
-                { msgCode: "PERMISSION_DENIED" },
-                StatusCodes.FORBIDDEN,
-                dbTransaction
-            );
-        }
+//         // check if the logged in user is the admin of the group or not.
+//         if (conversation.groupAdminId !== user.id) {
+//             return response.error(
+//                 req,
+//                 res,
+//                 { msgCode: "PERMISSION_DENIED" },
+//                 StatusCodes.FORBIDDEN,
+//                 dbTransaction
+//             );
+//         }
 
-        if (name) {
-            conversation.name = name;
-        }
+//         if (name) {
+//             conversation.name = name;
+//         }
 
-        if (fileObj) {
-            // upload the avatar to cloudinary
-            const cloudinaryResponse = await cloudinaryUtils.uploadFile(
-                fileObj,
-                {
-                    folder: "avatars",
-                }
-            );
-            if (!cloudinaryResponse.success) {
-                return response.error(
-                    req,
-                    res,
-                    { msgCode: "ERROR_UPLOADING_AVATAR_TO_CLOUDINARY" },
-                    StatusCodes.INTERNAL_SERVER_ERROR,
-                    dbTransaction
-                );
-            }
+//         if (fileObj) {
+//             // upload the avatar to cloudinary
+//             const cloudinaryResponse = await cloudinaryUtils.uploadFile(
+//                 fileObj,
+//                 {
+//                     folder: "avatars",
+//                 }
+//             );
+//             if (!cloudinaryResponse.success) {
+//                 return response.error(
+//                     req,
+//                     res,
+//                     { msgCode: "ERROR_UPLOADING_AVATAR_TO_CLOUDINARY" },
+//                     StatusCodes.INTERNAL_SERVER_ERROR,
+//                     dbTransaction
+//                 );
+//             }
 
-            conversation.avatar = cloudinaryResponse.url;
-        }
+//             conversation.avatar = cloudinaryResponse.url;
+//         }
 
-        const updatedConversation =
-            await commonService.saveRecord(conversation);
-        if (!updatedConversation) {
-            return response.error(
-                req,
-                res,
-                { msgCode: "CONVERSATION_UPDATE_FAILED" },
-                StatusCodes.INTERNAL_SERVER_ERROR,
-                dbTransaction
-            );
-        }
+//         const updatedConversation =
+//             await commonService.saveRecord(conversation);
+//         if (!updatedConversation) {
+//             return response.error(
+//                 req,
+//                 res,
+//                 { msgCode: "CONVERSATION_UPDATE_FAILED" },
+//                 StatusCodes.INTERNAL_SERVER_ERROR,
+//                 dbTransaction
+//             );
+//         }
 
-        return response.success(
-            req,
-            res,
-            {
-                msgCode: "CONVERSATION_UPDATED_SUCCESSFULLY",
-                data: JSON.parse(JSON.stringify(updatedConversation)),
-            },
-            StatusCodes.OK,
-            dbTransaction
-        );
-    } catch (error) {
-        console.log(
-            "conversation.controllers.js: updateConversation(): error: ",
-            error
-        );
-        return response.error(
-            req,
-            res,
-            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
-            StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTransaction
-        );
-    }
-};
+//         return response.success(
+//             req,
+//             res,
+//             {
+//                 msgCode: "CONVERSATION_UPDATED_SUCCESSFULLY",
+//                 data: JSON.parse(JSON.stringify(updatedConversation)),
+//             },
+//             StatusCodes.OK,
+//             dbTransaction
+//         );
+//     } catch (error) {
+//         console.log(
+//             "conversation.controllers.js: updateConversation(): error: ",
+//             error
+//         );
+//         return response.error(
+//             req,
+//             res,
+//             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
+//             StatusCodes.INTERNAL_SERVER_ERROR,
+//             dbTransaction
+//         );
+//     }
+// };
 
 // DELETE CONVERSATION - Delete a conversation
-module.exports.deleteConversation = async (req, res, next) => {
-    const dbTransaction = await db.transaction();
+// module.exports.deleteConversation = async (req, res, next) => {
+//     const dbTransaction = await db.transaction();
 
-    try {
-        const { conversationId } = req.params;
-        const { user } = req;
-        const { Conversations, UserConversations, Messages } = db.models;
+//     try {
+//         const { conversationId } = req.params;
+//         const { user } = req;
+//         const { Conversations, UserConversations, Messages } = db.models;
 
-        const conversation = await commonService.findByCondition(
-            Conversations,
-            {
-                id: conversationId,
-            }
-        );
+//         const conversation = await commonService.findByCondition(
+//             Conversations,
+//             {
+//                 id: conversationId,
+//             }
+//         );
 
-        if (!conversation) {
-            return response.error(
-                req,
-                res,
-                { msgCode: "CONVERSATION_DOES_NOT_EXISTS" },
-                StatusCodes.BAD_REQUEST,
-                dbTransaction
-            );
-        }
+//         if (!conversation) {
+//             return response.error(
+//                 req,
+//                 res,
+//                 { msgCode: "CONVERSATION_DOES_NOT_EXISTS" },
+//                 StatusCodes.BAD_REQUEST,
+//                 dbTransaction
+//             );
+//         }
 
-        // check if the logged in user is the admin of the group or not.
-        if (conversation.isGroupChat && conversation.groupAdminId !== user.id) {
-            return response.error(
-                req,
-                res,
-                {
-                    msgCode: "PERMISSION_DENIED",
-                    data: "only group admin can delete a group chat",
-                },
-                StatusCodes.FORBIDDEN,
-                dbTransaction
-            );
-        }
+//         // check if the logged in user is the admin of the group or not.
+//         if (conversation.isGroupChat && conversation.groupAdminId !== user.id) {
+//             return response.error(
+//                 req,
+//                 res,
+//                 {
+//                     msgCode: "PERMISSION_DENIED",
+//                     data: "only group admin can delete a group chat",
+//                 },
+//                 StatusCodes.FORBIDDEN,
+//                 dbTransaction
+//             );
+//         }
 
-        if (!conversation.isGroupChat && conversation.name === "self") {
-            return response.error(
-                req,
-                res,
-                {
-                    msgCode: "PERMISSION_DENIED",
-                    data: "cannot delete self-chat, only messages can be deleted in self chat",
-                },
-                StatusCodes.FORBIDDEN,
-                dbTransaction
-            );
-        }
+//         if (!conversation.isGroupChat && conversation.name === "self") {
+//             return response.error(
+//                 req,
+//                 res,
+//                 {
+//                     msgCode: "PERMISSION_DENIED",
+//                     data: "cannot delete self-chat, only messages can be deleted in self chat",
+//                 },
+//                 StatusCodes.FORBIDDEN,
+//                 dbTransaction
+//             );
+//         }
 
-        // Delete data from the Conversations table
-        const deletedConversation = await commonService.deleteQuery(
-            Conversations,
-            {
-                id: conversationId,
-            },
-            false,
-            dbTransaction
-        );
-        if (!deletedConversation) {
-            return response.error(
-                req,
-                res,
-                { msgCode: "CONVERSATION_DOES_NOT_EXISTS" },
-                StatusCodes.BAD_REQUEST,
-                dbTransaction
-            );
-        }
+//         // Delete data from the Conversations table
+//         const deletedConversation = await commonService.deleteQuery(
+//             Conversations,
+//             {
+//                 id: conversationId,
+//             },
+//             false,
+//             dbTransaction
+//         );
+//         if (!deletedConversation) {
+//             return response.error(
+//                 req,
+//                 res,
+//                 { msgCode: "CONVERSATION_DOES_NOT_EXISTS" },
+//                 StatusCodes.BAD_REQUEST,
+//                 dbTransaction
+//             );
+//         }
 
-        // Delete date for UserConversations table
-        const deletedUserConversations = await commonService.deleteQuery(
-            UserConversations,
-            {
-                conversationId: conversationId,
-            },
-            false,
-            dbTransaction
-        );
-        if (!deletedUserConversations) {
-            return response.error(
-                req,
-                res,
-                { msgCode: "CONVERSATION_DOES_NOT_EXISTS" },
-                StatusCodes.BAD_REQUEST,
-                dbTransaction
-            );
-        }
+//         // Delete date for UserConversations table
+//         const deletedUserConversations = await commonService.deleteQuery(
+//             UserConversations,
+//             {
+//                 conversationId: conversationId,
+//             },
+//             false,
+//             dbTransaction
+//         );
+//         if (!deletedUserConversations) {
+//             return response.error(
+//                 req,
+//                 res,
+//                 { msgCode: "CONVERSATION_DOES_NOT_EXISTS" },
+//                 StatusCodes.BAD_REQUEST,
+//                 dbTransaction
+//             );
+//         }
 
-        // Delete date from Messages table
-        await commonService.deleteQuery(
-            Messages,
-            {
-                conversationId: conversationId,
-            },
-            false,
-            dbTransaction
-        );
+//         // Delete date from Messages table
+//         await commonService.deleteQuery(
+//             Messages,
+//             {
+//                 conversationId: conversationId,
+//             },
+//             false,
+//             dbTransaction
+//         );
 
-        return response.success(
-            req,
-            res,
-            { msgCode: "CONVERSATION_DELETED_SUCCESSFULLY" },
-            StatusCodes.OK,
-            dbTransaction
-        );
-    } catch (error) {
-        console.log(
-            "conversation.controllers.js: deleteConversation(): error: ",
-            error
-        );
-        return response.error(
-            req,
-            res,
-            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
-            StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTransaction
-        );
-    }
-};
+//         return response.success(
+//             req,
+//             res,
+//             { msgCode: "CONVERSATION_DELETED_SUCCESSFULLY" },
+//             StatusCodes.OK,
+//             dbTransaction
+//         );
+//     } catch (error) {
+//         console.log(
+//             "conversation.controllers.js: deleteConversation(): error: ",
+//             error
+//         );
+//         return response.error(
+//             req,
+//             res,
+//             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
+//             StatusCodes.INTERNAL_SERVER_ERROR,
+//             dbTransaction
+//         );
+//     }
+// };

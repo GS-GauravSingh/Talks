@@ -18,8 +18,8 @@ router.post("/auth/signup", requestValidator(authValidation.signup), authControl
 router.post("/auth/verify-otp", requestValidator(authValidation.verifyOTP), authControllers.verifyOTP);
 router.post("/auth/resend-otp", requestValidator(authValidation.resendOTP), authControllers.resendOTP);
 router.post("/auth/login", requestValidator(authValidation.login), authControllers.login);
-router.post("/auth/logout", authControllers.logout);
-router.delete("/auth/delete-account", requestValidator(authValidation.deleteAccount), authControllers.deleteAccount);
+router.post("/auth/logout", verifyAuthJwtToken, authControllers.logout);
+// router.delete("/auth/delete-account", verifyAuthJwtToken, requestValidator(authValidation.deleteAccount), authControllers.deleteAccount);
 
 // ------------------- Protected - User Routes -----------------------
 router.get("/user/me", verifyAuthJwtToken, userControllers.getMe);
@@ -32,8 +32,8 @@ router.patch("/user/password", verifyAuthJwtToken, requestValidator(userValidati
 router.post("/conversation", verifyAuthJwtToken, requestValidator(conversationValidation.createConversation), conversationControllers.createConversation);
 router.get("/conversation/:conversationId", verifyAuthJwtToken, conversationControllers.getConversation);
 router.get("/conversations", verifyAuthJwtToken, conversationControllers.getAllConversations);
-router.patch("/conversation/:conversationId", verifyAuthJwtToken, requestValidator(conversationValidation.updateConversation), multerService.upload.single("file"), conversationControllers.updateConversation);
-router.delete("/conversation/:conversationId", verifyAuthJwtToken, conversationControllers.deleteConversation);
+// router.patch("/conversation/:conversationId", verifyAuthJwtToken, requestValidator(conversationValidation.updateConversation), multerService.upload.single("file"), conversationControllers.updateConversation);
+// router.delete("/conversation/:conversationId", verifyAuthJwtToken, conversationControllers.deleteConversation);
 
 // ------------------- Protected - Messages Routes ---------------------------
 router.post("/message/:conversationId", verifyAuthJwtToken, multerService.upload.single("file"), requestValidator(messageValidation.sendMessage), messageControllers.sendMessage);

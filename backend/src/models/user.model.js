@@ -124,6 +124,8 @@ module.exports = (sequelize, DataTypes) => {
     // Custom Instance Methods
     // Instance method to compare the password provided by the user.
     UserModel.prototype.comparePassword = async function (enteredPassword) {
+        console.log(enteredPassword);
+        console.log(this.password);
         return await bcrypt.compare(enteredPassword, this.password);
     };
 

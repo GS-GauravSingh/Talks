@@ -8,7 +8,19 @@ module.exports = {
     }),
 
     updatePassword: Joi.object({
-        currentPassword: Joi.string().min(6).required(),
-        newPassword: Joi.string().min(6).required(),
+        currentPassword: Joi.string()
+            .min(8)
+            .pattern(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/)
+            .message(
+                "Password must be at least 8 characters, including a number, a lowercase letter, and an uppercase letter"
+            )
+            .required(),
+        newPassword: Joi.string()
+            .min(8)
+            .pattern(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/)
+            .message(
+                "Password must be at least 8 characters, including a number, a lowercase letter, and an uppercase letter"
+            )
+            .required(),
     }),
 };

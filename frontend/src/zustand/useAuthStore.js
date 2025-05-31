@@ -43,12 +43,14 @@ const useAuthStore = create((set, get) => ({
 		try {
 			set({ isSigningUp: true });
 			const response = await axiosInstance.post("/auth/signup", formData);
-			set({ authUser: response.data });
 
 			// Update the loading toast to success.
 			toast.success(response.data.message, {
 				id: toastId,
 			});
+
+			// Store the user email in the session storage, it helps in OTP verification.
+			sessionStorage.setItem("userEmail", formData.email);
 
 			// navigate user to the OTP verification page
 			navigate("/auth/verifyOTP");
@@ -78,15 +80,18 @@ const useAuthStore = create((set, get) => ({
 		try {
 			set({ isSigningUp: true });
 			const response = await axiosInstance.post(
-				"/auth/verifyOTP",
+				"/auth/verify-otp",
 				formData
 			);
-			set({ authUser: response.data });
+			set({ authUser: response.data?.result?.user });
 
 			// Update the loading toast to success.
 			toast.success(response.data.message, {
 				id: toastId,
 			});
+
+			// Delete the user email from the session storage once the OTP is verified.
+			sessionStorage.removeItem("userEmail");
 
 			navigate("/home");
 		} catch (error) {
@@ -115,7 +120,7 @@ const useAuthStore = create((set, get) => ({
 		try {
 			set({ isSigningUp: true });
 			const response = await axiosInstance.post(
-				"/auth/resendOTP",
+				"/auth/resend-otp",
 				formData
 			);
 
@@ -149,7 +154,7 @@ const useAuthStore = create((set, get) => ({
 		try {
 			set({ isLoggingIn: true });
 			const response = await axiosInstance.post("/auth/login", formData);
-			set({ authUser: response.data });
+			set({ authUser: response.data?.result?.user });
 
 			toast.success(response.data.message, {
 				id: toastId,

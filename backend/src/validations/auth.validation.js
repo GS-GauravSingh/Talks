@@ -5,7 +5,13 @@ module.exports = {
         firstname: Joi.string().required(),
         lastname: Joi.string().allow(null, ""),
         email: Joi.string().email().required(),
-        password: Joi.string().min(6).required(),
+        password: Joi.string()
+            .min(8)
+            .pattern(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/)
+            .message(
+                "Password must be at least 8 characters, including a number, a lowercase letter, and an uppercase letter"
+            )
+            .required(),
     }),
 
     verifyOTP: Joi.object({
@@ -23,6 +29,6 @@ module.exports = {
     }),
 
     deleteAccount: Joi.object({
-        userId: Joi.number().required(),
+        userId: Joi.string().required(),
     }),
 };

@@ -50,6 +50,7 @@ module.exports.verifyAuthJwtToken = async (req, res, next) => {
             "firstname",
             "lastname",
             "email",
+            "password",
             "avatar",
             "bio",
             "jobTitle",

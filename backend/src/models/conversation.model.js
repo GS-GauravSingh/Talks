@@ -17,33 +17,6 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
             },
 
-            name: {
-                type: DataTypes.STRING,
-                allowNull: true, // only used for group chats
-            },
-
-            isGroupChat: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: false,
-            },
-
-            latestMessageId: {
-                type: DataTypes.UUID,
-                allowNull: true,
-            },
-
-            groupAdminId: {
-                type: DataTypes.UUID,
-                allowNull: true,
-            },
-
-            avatar: {
-                type: DataTypes.STRING, // cloudinary URL
-                defaultValue:
-                    "https://res.cloudinary.com/df7wvngsb/image/upload/v1747307232/group-chat_i9valz.png",
-                allowNull: false, // optional - used only for group chats
-            },
-
             participants: {
                 type: DataTypes.ARRAY(DataTypes.UUID),
                 allowNull: false,
@@ -54,8 +27,6 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             paranoid: true,
             indexes: [
-                { fields: ["latestMessageId"] },
-                { fields: ["groupAdminId"] },
                 { fields: ["participants"] },
             ],
         }

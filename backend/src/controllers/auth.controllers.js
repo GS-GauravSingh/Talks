@@ -30,7 +30,9 @@ module.exports.register = async (req, res, next) => {
         }
 
         // Check: Account already exists
-        const user = await commonService.findByCondition(Users, { email: email });
+        let user = await commonService.findByCondition(Users, {
+            email: email,
+        });
 
         if (user && user.isVerified) {
             // Account exists and is verified.
@@ -45,47 +47,36 @@ module.exports.register = async (req, res, next) => {
             );
         }
 
-        if (user && !user.isVerified) {
-            // Account exists but is not verified.
-            // Delete the account and create a new one.
-            await commonService.deleteQuery(
+        if (!user) {
+            // If the account doesn't exists and, then create one.
+            user = await commonService.createNewRecord(
                 Users,
-                { email: email },
+                {
+                    firstname: firstname,
+                    lastname: lastname ? lastname : null,
+                    email: email,
+                    password: password,
+                },
                 false,
                 dbTransaction
             );
+            if (!newUser) {
+                return response.error(
+                    req,
+                    res,
+                    {
+                        msgCode: "INTERNAL_SERVER_ERROR",
+                        data: "Failed to register new user, please try again later",
+                    },
+                    StatusCodes.INTERNAL_SERVER_ERROR,
+                    dbTransaction
+                );
+            }
         }
 
-        // If the account doesn't exists and,
-        // Account exists but is not verified.
-        // Then in both of the cases, we register this user.
-        const newUser = await commonService.createNewRecord(
-            Users,
-            {
-                firstname: firstname,
-                lastname: lastname ? lastname : null,
-                email: email,
-                password: password,
-            },
-            false,
-            dbTransaction
-        );
-        if (!newUser) {
-            return response.error(
-                req,
-                res,
-                {
-                    msgCode: "INTERNAL_SERVER_ERROR",
-                    data: "Failed to register new user, please try again later",
-                },
-                StatusCodes.INTERNAL_SERVER_ERROR,
-                dbTransaction
-            );
-        }
-        
+        // if user exists but not verified, in this case, send OTP to the user email address for verification.
+        req.userId = user.id; // attach the user's id to the request object for further use.
         await dbTransaction.commit(); // close the transaction
-        req.userId = newUser.id; // attach the user's id to the request object for further use.
-        console.log("new user created: ", newUser);
         next(); // calls the next middleware
     } catch (error) {
         console.log("auth.controllers.js: register(): error: ", error);
@@ -105,8 +96,8 @@ module.exports.sendOTP = async (req, res, next) => {
 
     try {
         const { Users } = db.models;
-        const userId = req.userId;
-        
+        const { userId } = req;
+
         const user = await commonService.findByPrimaryKey(
             Users,
             userId,
@@ -115,7 +106,6 @@ module.exports.sendOTP = async (req, res, next) => {
         );
 
         if (!user) {
-            console.log("user not found")
             return response.error(
                 req,
                 res,
@@ -134,7 +124,6 @@ module.exports.sendOTP = async (req, res, next) => {
             upperCaseAlphabets: false,
             specialChars: false,
         });
-        console.log(otp);
 
         // store the generated OTP in the user record.
         user.otp = otp;
@@ -144,7 +133,7 @@ module.exports.sendOTP = async (req, res, next) => {
             false,
             dbTransaction
         ); // save the changes - otp will be hased automatically due to the `beforeUpdate` hook.
-        
+
         if (!updatedUser) {
             return response.error(
                 req,
@@ -471,7 +460,10 @@ module.exports.login = async (req, res, next) => {
             [],
             true
         );
+
+        console.log("USER: ", user);
         if (!user) {
+            console.log("user not found");
             return response.error(
                 req,
                 res,
@@ -557,49 +549,6 @@ module.exports.logout = async (req, res, next) => {
         );
     } catch (error) {
         console.log("auth.controllers.js: logout(): error: ", error);
-        return response.error(
-            req,
-            res,
-            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
-            StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTransaction
-        );
-    }
-};
-
-// DELETE ACCOUNT
-module.exports.deleteAccount = async (req, res, next) => {
-    const dbTransaction = await db.transaction();
-
-    try {
-        const { Users } = db.models;
-        const { userId } = req.body;
-
-        const accountDeleted = await commonService.deleteQuery(
-            Users,
-            { id: userId },
-            true,
-            dbTransaction
-        );
-        if (!accountDeleted) {
-            return response.error(
-                req,
-                res,
-                { msgCode: "ACCOUNT_DOES_NOT_EXISTS" },
-                StatusCodes.BAD_REQUEST,
-                dbTransaction
-            );
-        }
-
-        return response.success(
-            req,
-            res,
-            { msgCode: "ACCOUNT_DELETED_SUCCESSFULLY" },
-            StatusCodes.OK,
-            dbTransaction
-        );
-    } catch (error) {
-        console.log("auth.controllers.js: deleteAccount(): error: ", error);
         return response.error(
             req,
             res,

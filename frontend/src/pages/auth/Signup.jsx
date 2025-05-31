@@ -25,7 +25,7 @@ function Signup() {
 			.min(2, "Firstname must be at least 2 characters.")
 			.max(30, "Firstname cannot exceed 30 characters.")
 			.regex(
-				/^[A-Za-z](?!.*(--|__))[A-Za-z-_]*[A-Za-z]$/,
+				/^[A-Za-z](?!.*(--|__))[A-Za-z_-]*[A-Za-z]$/,
 				"Only letters, single dash or underscore allowed. Must start and end with a letter."
 			),
 
@@ -34,9 +34,15 @@ function Signup() {
 			.optional()
 
 			// zod allows us to write custom validation logic via `.refine()`.
-			.refine((val) => !val || /^[A-Za-z]+$/.test(val), {
-				message: "Only letters allowed.",
-			}),
+			.refine(
+				(val) =>
+					!val ||
+					/^[A-Za-z](?!.*(--|__))[A-Za-z_-]*[A-Za-z]$/.test(val),
+				{
+					message:
+						"Only letters, single dash or underscore allowed. Must start and end with a letter.",
+				}
+			),
 
 		email: z.string().email("Please provide a valid email address."),
 
@@ -88,7 +94,7 @@ function Signup() {
 	}, [errors]);
 
 	return (
-		<div className="min-h-screen grid place-content-center grid-rows-1 lg:grid-cols-2">
+		<div className="min-h-screen grid place-content-center grid-rows-1 lg:grid-cols-2 pt-16">
 			{/* Left Side */}
 			<div className="flex flex-col items-center justify-center p-6 sm:p-12">
 				<div className="w-full max-w-md space-y-8 ">
@@ -135,9 +141,6 @@ function Signup() {
 								type="text"
 								className="tracking-wider"
 								placeholder="Firstname"
-								pattern="^[A-Za-z](?!.*(--|__))[A-Za-z-_]*[A-Za-z]$"
-								minLength="2"
-								maxLength="30"
 								title="Only letters, single dash or underscore allowed. Must start and end with a letter."
 								disabled={isSigningUp}
 								{...register("firstname")}
@@ -166,9 +169,6 @@ function Signup() {
 								type="text"
 								className="tracking-wider"
 								placeholder="Lastname"
-								pattern="^[A-Za-z](?!.*(--|__))[A-Za-z-_]*[A-Za-z]$"
-								minLength="2"
-								maxLength="30"
 								title="Only letters, single dash or underscore allowed. Must start and end with a letter."
 								disabled={isSigningUp}
 								{...register("lastname")}
@@ -234,9 +234,7 @@ function Signup() {
 							<input
 								type="password"
 								placeholder="Password"
-								minLength="8"
 								className="tracking-wider"
-								pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
 								title="At least 8 characters, including a number, a lowercase letter, and an uppercase letter"
 								disabled={isSigningUp}
 								{...register("password")}
