@@ -1,10 +1,39 @@
 import React from "react";
 import useAuthStore from "../zustand/useAuthStore";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { MessageSquare, Settings, LogOut, User, House } from "lucide-react";
+import toast from "react-hot-toast";
 
 function Navbar() {
 	const { authUser, logoutUser } = useAuthStore();
+	const navigate = useNavigate();
+
+	function showLogoutConfirmatonToast() {
+		toast((t) => (
+			<div className="flex flex-col gap-2">
+				<span>
+					Are you sure you want to <b>log out?</b>
+				</span>
+				<p className="flex items-center justify-around">
+					<button
+						className="btn btn-sm"
+						onClick={() => toast.dismiss(t.id)}
+					>
+						Dismiss
+					</button>
+					<button
+						className="btn btn-sm btn-warning"
+						onClick={() => {
+							logoutUser(navigate);
+							toast.dismiss(t.id);
+						}}
+					>
+						Confirm
+					</button>
+				</p>
+			</div>
+		));
+	}
 
 	return (
 		<div className="fixed top-0 w-full z-50 backdrop-blur-lg bg-base-100/80 border-base-300">
@@ -57,7 +86,10 @@ function Navbar() {
 						</Link>
 
 						{authUser && (
-							<button className="btn btn-sm gap-2 transition-colors">
+							<button
+								onClick={showLogoutConfirmatonToast}
+								className="btn btn-sm gap-2 transition-colors"
+							>
 								<LogOut className="size-4" />
 								<span className="hidden sm:inline">Logout</span>
 							</button>

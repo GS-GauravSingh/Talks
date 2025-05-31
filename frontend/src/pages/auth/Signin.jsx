@@ -64,7 +64,7 @@ function Signin() {
 	}, [errors]);
 
 	return (
-		<div className="min-h-screen grid place-content-center grid-rows-1 lg:grid-cols-2">
+		<div className="min-h-screen grid place-content-center grid-rows-1 lg:grid-cols-2 pt-16">
 			{/* Left Side */}
 			<div className="flex flex-col items-center justify-center p-6 sm:p-12">
 				<div className="w-full max-w-md space-y-8 ">

@@ -26,23 +26,30 @@ function index() {
 			{/* App Routes */}
 			<Routes>
 				{/* Root Route */}
-				<Route index element={<Navigate to="/home" />} />
+				<Route index element={<Navigate to={"/home"} />} />
 
 				{/* Home Route */}
-				<Route path="/home" element={authUser ? <Home /> : <Signin />} />
+				<Route
+					path="/home"
+					element={
+						authUser ? <Home /> : <Navigate to={"/auth/signin"} />
+					}
+				/>
 
 				{/* Authentication Routes */}
 				<Route
 					path="/auth/signup"
-					element={authUser ? <Navigate to="/home" /> : <Signup />}
+					element={authUser ? <Navigate to={"/home"} /> : <Signup />}
 				/>
 				<Route
 					path="/auth/verifyOTP"
-					element={authUser ? <Navigate to="/home" /> : <VerifyOTP />}
+					element={
+						authUser ? <Navigate to={"/home"} /> : <VerifyOTP />
+					}
 				/>
 				<Route
 					path="/auth/signin"
-					element={authUser ? <Navigate to="/home" /> : <Signin />}
+					element={authUser ? <Navigate to={"/home"} /> : <Signin />}
 				/>
 			</Routes>
 
