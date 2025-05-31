@@ -66,7 +66,7 @@ function Navbar() {
 								</Link>
 
 								<Link
-									to="/user/profile"
+									to="/profile"
 									className="btn btn-sm gap-2 transition-colors"
 								>
 									<User className="size-4" />

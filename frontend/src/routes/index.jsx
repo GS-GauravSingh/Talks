@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import { Home, Signin, Signup, VerifyOTP } from "../pages";
-import { Navbar } from "../sections";
+import { Navbar, Profile, Settings } from "../sections";
 import useAuthStore from "../zustand/useAuthStore";
 import Loader from "../components/Loader";
 import { Toaster } from "react-hot-toast";
+import useThemeStore from "../zustand/useThemeStore";
 
 function index() {
 	const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
+	const { theme } = useThemeStore();
 
 	useEffect(() => {
 		checkAuth();
@@ -19,7 +21,7 @@ function index() {
 	}
 
 	return (
-		<>
+		<div data-theme={theme}>
 			{/* Navbar */}
 			<Navbar />
 
@@ -51,11 +53,23 @@ function index() {
 					path="/auth/signin"
 					element={authUser ? <Navigate to={"/home"} /> : <Signin />}
 				/>
+
+				{/* Settings Page */}
+				<Route
+					path="/settings"
+					element={<Settings />}
+				/>
+
+				{/* Profile Page */}
+				<Route
+					path="/profile"
+					element={<Profile />}
+				/>
 			</Routes>
 
 			{/* React-Hot-Toast */}
 			<Toaster position="top-center" />
-		</>
+		</div>
 	);
 }
 

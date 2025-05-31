@@ -56,6 +56,9 @@ module.exports.verifyAuthJwtToken = async (req, res, next) => {
             "jobTitle",
             "country",
             "isVerified",
+            "createdAt",
+            "updatedAt",
+            "deletedAt"
         ],
         true
     );
