@@ -31,4 +31,8 @@ module.exports = {
     deleteAccount: Joi.object({
         userId: Joi.string().required(),
     }),
+
+    googleAuth: Joi.object({
+        code: Joi.string().required(),
+    }),
 };

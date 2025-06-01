@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
 
             password: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true, // Allows null (for OAuth users)
             },
 
             passwordChangedAt: {
@@ -48,7 +48,8 @@ module.exports = (sequelize, DataTypes) => {
 
             avatar: {
                 type: DataTypes.STRING /* cloudinary URL */,
-                defaultValue: "https://res.cloudinary.com/df7wvngsb/image/upload/v1747302148/avatar-removebg-preview_bdfweo.png",
+                defaultValue:
+                    "https://res.cloudinary.com/df7wvngsb/image/upload/v1747302148/avatar-removebg-preview_bdfweo.png",
                 allowNull: false,
             },
 
@@ -115,7 +116,7 @@ module.exports = (sequelize, DataTypes) => {
             user.password = hashedPassword;
         }
 
-        if (user.otp &&user.changed("otp")) {
+        if (user.otp && user.changed("otp")) {
             const hashedOTP = await bcrypt.hash(user.otp, 12);
             user.otp = hashedOTP;
         }
@@ -160,8 +161,7 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     // Associations
-    UserModel.associate = function (models){
-
+    UserModel.associate = function (models) {
         // a user can be part of many conversations.
         // many-to-many relationship between users and conversations.
         UserModel.belongsToMany(models.Conversations, {
@@ -174,7 +174,12 @@ module.exports = (sequelize, DataTypes) => {
         UserModel.hasMany(models.Messages, {
             foreignKey: "senderId", // references the `senderId` column in the `Messages` table.
         });
-    }
+
+        UserModel.hasMany(models.OAuthAccounts, {
+            foreignKey: "user_id",
+            onDelete: "CASCADE",
+        });
+    };
 
     return UserModel;
 };

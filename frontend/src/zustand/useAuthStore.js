@@ -243,6 +243,38 @@ const useAuthStore = create((set, get) => ({
 			set({ isUpdatingUser: false });
 		}
 	},
+
+	googleAuthentication: async (formData, navigate) => {
+		const toastId = toast.loading("Authenticating, please wait...");
+
+		try {
+			set({ isLoggingIn: true });
+			const response = await axiosInstance.post(`/auth/google`, formData);
+			console.log("Google Authentication Response: ", response);
+			set({ authUser: response.data?.result?.user });
+
+			toast.success(response.data.message, {
+				id: toastId,
+			});
+
+			navigate("/home");
+		} catch (error) {
+			console.log("googleAuthentication(): error: ", error);
+
+			toast.error(
+				error?.response?.data?.message ||
+					error?.message ||
+					"Something went wrong",
+				{
+					id: toastId,
+				}
+			);
+
+			set({ isLoggingIn: false });
+		} finally {
+			set({ isLoggingIn: false });
+		}
+	},
 }));
 
 export default useAuthStore;
