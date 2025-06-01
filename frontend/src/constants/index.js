@@ -32,3 +32,26 @@ export const THEMES = [
 	"nord",
 	"sunset",
 ];
+
+export const COUNTRY_SELECT_OPTIONS = [
+	{ country: "United States", countryCode: "US", dialCode: "+1" },
+	{ country: "United Kingdom", countryCode: "GB", dialCode: "+44" },
+	{ country: "Canada", countryCode: "CA", dialCode: "+1" },
+	{ country: "India", countryCode: "IN", dialCode: "+91" },
+	{ country: "Australia", countryCode: "AU", dialCode: "+61" },
+	{ country: "Germany", countryCode: "DE", dialCode: "+49" },
+	{ country: "France", countryCode: "FR", dialCode: "+33" },
+	{ country: "Japan", countryCode: "JP", dialCode: "+81" },
+	{ country: "China", countryCode: "CN", dialCode: "+86" },
+	{ country: "Brazil", countryCode: "BR", dialCode: "+55" },
+	{ country: "South Africa", countryCode: "ZA", dialCode: "+27" },
+	{ country: "Mexico", countryCode: "MX", dialCode: "+52" },
+	{ country: "Italy", countryCode: "IT", dialCode: "+39" },
+	{ country: "Russia", countryCode: "RU", dialCode: "+7" },
+	{ country: "Netherlands", countryCode: "NL", dialCode: "+31" },
+	{ country: "Spain", countryCode: "ES", dialCode: "+34" },
+	{ country: "Singapore", countryCode: "SG", dialCode: "+65" },
+	{ country: "New Zealand", countryCode: "NZ", dialCode: "+64" },
+	{ country: "Sweden", countryCode: "SE", dialCode: "+46" },
+	{ country: "South Korea", countryCode: "KR", dialCode: "+82" },
+];

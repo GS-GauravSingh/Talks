@@ -19,6 +19,9 @@ const environmentVariables = {
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
     MAX_FILE_SIZE: process.env.MAX_FILE_SIZE || 1, // in MB
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET
+
 };
 
 module.exports = environmentVariables;

@@ -7,6 +7,7 @@ const otpEmailTemplate = require("../templates/otpTemplate");
 const { generateJWT } = require("../utils/jsonWebToken.util");
 const environmentVariables = require("../constants/environmentVariables");
 const commonService = require("../services/common.service");
+const { oauth2Client, oauth2 } = require("../utils/googleOAuth.util");
 
 // REGISTER NEW USER
 module.exports.register = async (req, res, next) => {
@@ -461,7 +462,6 @@ module.exports.login = async (req, res, next) => {
             true
         );
 
-        console.log("USER: ", user);
         if (!user) {
             console.log("user not found");
             return response.error(
@@ -549,6 +549,190 @@ module.exports.logout = async (req, res, next) => {
         );
     } catch (error) {
         console.log("auth.controllers.js: logout(): error: ", error);
+        return response.error(
+            req,
+            res,
+            { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
+            StatusCodes.INTERNAL_SERVER_ERROR,
+            dbTransaction
+        );
+    }
+};
+
+// GOOGLE AUTHENTICATION
+module.exports.googleAuthentication = async (req, res, next) => {
+    const dbTransaction = await db.transaction();
+
+    try {
+        const { Users, OAuthAccounts } = db.models;
+        const { code } = req.body;
+
+        const googleResponse = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(googleResponse.tokens); // store the user credentials (tokens) in the `oauth2Client` so that it can be used to make authenticated requests to google on behalf of the user.
+
+        // Get the user profile
+        const { data } = await oauth2(oauth2Client).userinfo.get();
+
+        const firstname = data?.name.split(" ")[0];
+        const lastname = data?.name.split(" ")[1] || null;
+        const email = data?.email;
+        const avatar = data?.picture;
+        const isVerified = data?.verified_email;
+        const provider_id = data?.id;
+
+        // check whether user exists or not
+        const result = await commonService.findAllWithOneAssociatedModel(
+            Users,
+            OAuthAccounts,
+            { email: email },
+            {},
+            [
+                "id",
+                "firstname",
+                "lastname",
+                "email",
+                "password",
+                "avatar",
+                "jobTitle",
+                "bio",
+                "country",
+                "isVerified",
+                "createdAt",
+                "updatedAt",
+                "deletedAt"
+            ],
+            []
+        );
+
+        // Case 1: User doesn't exists
+        let user, isNewUserCreated, isOAuthAlreadyLinked;
+        if (result.count === 0 && result.rows.length === 0) {
+            user = await commonService.createNewRecord(
+                Users,
+                {
+                    firstname,
+                    lastname,
+                    email,
+                    avatar,
+                    isVerified,
+                },
+                true,
+                dbTransaction
+            );
+
+            isNewUserCreated = true;
+            if (!user) {
+                return response.error(
+                    req,
+                    res,
+                    {
+                        msgCode: "INTERNAL_SERVER_ERROR",
+                        data: "Failed to register new user, please try again later",
+                    },
+                    StatusCodes.INTERNAL_SERVER_ERROR,
+                    dbTransaction
+                );
+            }
+        }
+
+        // Case 2: User already exists but google's oauth isn't linked
+        // Case 2.1: User's email is verified
+        // Case 2.2: User's email is not verified
+        else if (
+            result.count !== 0 &&
+            result.rows.length > 0 &&
+            !result.rows[0].OAuthAccounts[0].provider_id
+        ) {
+            if (!result.rows[0].isVerified) {
+                const updatedUser = await commonService.updateRecords(
+                    Users,
+                    { isVerified },
+                    { email },
+                    dbTransaction
+                );
+
+                if (!updatedUser[1]) {
+                    return response.error(
+                        req,
+                        res,
+                        {
+                            msgCode: "INTERNAL_SERVER_ERROR",
+                            data: "Failed to update user isVerified property",
+                        },
+                        StatusCodes.INTERNAL_SERVER_ERROR,
+                        dbTransaction
+                    );
+                }
+
+                user = updatedUser[1];
+            }
+            else{
+                user = result.rows[0];
+            }
+        }
+
+        // Case 3: User already exists with google's oauth linked
+        else {
+            user = result.rows[0];
+            isOAuthAlreadyLinked = true;
+        }
+
+        if (!isOAuthAlreadyLinked) {
+            const oauthAccount = await commonService.createNewRecord(
+                OAuthAccounts,
+                {
+                    user_id: user.id,
+                    provider: "GOOGLE",
+                    provider_id: provider_id,
+                },
+                true,
+                dbTransaction
+            );
+
+            if (!oauthAccount) {
+                return response.error(
+                    req,
+                    res,
+                    {
+                        msgCode: "INTERNAL_SERVER_ERROR",
+                        data: "Failed to register new user, please try again later",
+                    },
+                    StatusCodes.INTERNAL_SERVER_ERROR,
+                    dbTransaction
+                );
+            }
+        }
+
+        // Send JWT token as a cookie
+        const token = generateJWT({ id: user.id });
+        res.cookie("jwt", token, {
+            maxAge: 7 * 24 * 60 * 60 * 1000, // maxAge defines Cookie Lifespan before it expires. After 7 days (7 * 24 * 60 * 60 * 1000 in Milliseconds), the cookie is automatically deleted.
+            httpOnly: true, // Prevents client-side JavaScript from accessing the cookie.
+            sameSite: "strict", // cookies are only sent for same-site requests.
+            secure: environmentVariables.NODE_ENV !== "development", // Ensures cookies are sent only over HTTPS.
+        });
+
+        return response.success(
+            req,
+            res,
+            {
+                msgCode: isNewUserCreated ? "SIGNUP_SUCCESSFULL" : "LOGIN_SUCCESSFULL",
+                data: {
+                    user: {
+                        ...JSON.parse(JSON.stringify(user)),
+                        password: null,
+                    },
+                    token: token,
+                },
+            },
+            isNewUserCreated ? StatusCodes.CREATED : StatusCodes.OK,
+            dbTransaction
+        );
+    } catch (error) {
+        console.log(
+            "auth.controllers.js: googleAuthentication(): error: ",
+            error
+        );
         return response.error(
             req,
             res,

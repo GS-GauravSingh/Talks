@@ -1,6 +1,16 @@
 import React from "react";
 import useAuthStore from "../zustand/useAuthStore";
-import { Camera, Mail, User } from "lucide-react";
+import {
+	BookUser,
+	Camera,
+	Earth,
+	IdCard,
+	Mail,
+	Pencil,
+	User,
+} from "lucide-react";
+import SelectInput from "../components/SelectInput";
+import { COUNTRY_SELECT_OPTIONS } from "../constants";
 
 function Profile() {
 	const { authUser, isUpdatingUser, updateUserAvatar } = useAuthStore();
@@ -23,7 +33,7 @@ function Profile() {
 					{/* Heading */}
 					<div className="text-center">
 						<h1 className="text-2xl font-bold">Profile</h1>
-						{/* <p className="mt-2 text-sm">Your profile information</p> */}
+						<p className="mt-2 text-sm">All About You</p>
 					</div>
 
 					{/* Avatar */}
@@ -61,6 +71,7 @@ function Profile() {
 
 					{/* User Details */}
 					<div className="space-y-6">
+						{/* Firstname */}
 						<div className="space-y-1.5">
 							<div className="text-sm text-zinc-400 flex items-center gap-2">
 								<User className="w-4 h-4" />
@@ -76,6 +87,7 @@ function Profile() {
 							/>
 						</div>
 
+						{/* Lastname */}
 						<div className="space-y-1.5">
 							<div className="text-sm text-zinc-400 flex items-center gap-2">
 								<User className="w-4 h-4" />
@@ -90,6 +102,7 @@ function Profile() {
 							/>
 						</div>
 
+						{/* Email */}
 						<div className="space-y-1.5">
 							<div className="text-sm text-zinc-400 flex items-center gap-2">
 								<Mail className="w-4 h-4" />
@@ -103,10 +116,67 @@ function Profile() {
 								className="input w-full px-4 py-2.5 bg-base-200"
 							/>
 						</div>
-					</div>
-                    
 
-                    {/* Account Information */}
+						{/* Job Title */}
+						<div className="space-y-1.5">
+							<div className="flex items-center justify-between">
+								<div className="text-sm text-zinc-400 flex items-center gap-2">
+									<IdCard className="w-4 h-4" />
+									Job Title
+								</div>
+								<div
+									title={"Click to edit"}
+									className="text-sm text-zinc-400 hover:text-primary hover:scale-105 transition-all duration-75 flex items-center gap-2 cursor-pointer"
+								>
+									<Pencil className="size-4" />
+								</div>
+							</div>
+							<input
+								type="text"
+								placeholder="Your Job Title"
+								value={authUser?.jobTitle}
+								readOnly
+								className="input w-full px-4 py-2.5 bg-base-200"
+							/>
+						</div>
+
+						{/* Bio */}
+						<div className="space-y-1.5">
+							<div className="flex items-center justify-between">
+								<div className="text-sm text-zinc-400 flex items-center gap-2">
+									<BookUser className="w-4 h-4" />
+									Bio
+								</div>
+								<div
+									title={"Click to edit"}
+									className="text-sm text-zinc-400 hover:text-primary hover:scale-105 transition-all duration-75 flex items-center gap-2 cursor-pointer"
+								>
+									<Pencil className="size-4" />
+								</div>
+							</div>
+							<input
+								type="text"
+								placeholder="Add Bio"
+								value={authUser?.bio}
+								readOnly
+								className="input w-full px-4 py-2.5 bg-base-200"
+							/>
+						</div>
+
+						{/* Country */}
+
+						<SelectInput
+							title={"Country"}
+							disabledOptionTitle={"Select Country"}
+							defaultValue={authUser?.country}
+							readOnly={authUser?.country ? true : false}
+							options={COUNTRY_SELECT_OPTIONS}
+							icon={<Earth className="size-5" />}
+							titleOnHover={"Click to edit"}
+						/>
+					</div>
+
+					{/* Account Information */}
 					<div className="bg-base-300 rounded-xl">
 						<h2 className="text-lg font-medium">
 							Account Information

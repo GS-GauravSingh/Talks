@@ -19,6 +19,7 @@ router.post("/auth/verify-otp", requestValidator(authValidation.verifyOTP), auth
 router.post("/auth/resend-otp", requestValidator(authValidation.resendOTP), authControllers.resendOTP);
 router.post("/auth/login", requestValidator(authValidation.login), authControllers.login);
 router.post("/auth/logout", verifyAuthJwtToken, authControllers.logout);
+router.post("/auth/google", requestValidator(authValidation.googleAuth), authControllers.googleAuthentication);
 // router.delete("/auth/delete-account", verifyAuthJwtToken, requestValidator(authValidation.deleteAccount), authControllers.deleteAccount);
 
 // ------------------- Protected - User Routes -----------------------
