@@ -2,7 +2,8 @@ const Joi = require("joi");
 
 module.exports = {
     createConversation: Joi.object({
-        userId: Joi.string().required(),
+        userIds: Joi.array().items(Joi.string()).min(1).required(),
+        name: Joi.string().optional(), // Optional: name for group chats/conversations
     }),
 
     updateConversation: Joi.object({

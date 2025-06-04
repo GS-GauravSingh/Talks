@@ -48,5 +48,6 @@
     "MESSAGE_DOES_NOT_EXISTS": "Message doesn't exists",
     "MESSAGES_DELETED_SUCCESSFULLY": "Message deleted successfully",
     "MESSAGES_SENT_SUCCESSFULLY": "Message sent successfully",
-    "ERROR_DELETING_ACCOUNT": "An error occured while deleting user account, please try again later"
+    "ERROR_DELETING_ACCOUNT": "An error occured while deleting user account, please try again later",
+    "USER_NOT_FOUND": "User(s) not found"
 }

@@ -12,16 +12,16 @@ module.exports.createConversation = async (req, res, next) => {
 
     try {
         const { user } = req; // logged in user
-        const { userId } = req.body;
-        const { Conversations, UserConversations } = db.models;
+        const { userIds, name } = req.body;
+        const { Conversations, UserConversations, Users } = db.models;
 
-        if (!userId) {
+        if (!userIds) {
             return response.error(
                 req,
                 res,
                 {
                     msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
-                    data: "userId is required",
+                    data: "userIds is required to create a conversation",
                 },
                 StatusCodes.BAD_REQUEST,
                 dbTransaction
@@ -29,7 +29,43 @@ module.exports.createConversation = async (req, res, next) => {
         }
 
         // check if the conversation already exists or not.
-        const participants = [userId, user.id].sort();
+        const participants = [...new Set([...userIds, user.id])].sort();
+        const isGroupChat = participants.length > 2;
+        const groupName = isGroupChat
+            ? name
+                ? name
+                : `Group-${Date.now()}`
+            : null;
+
+        // check whether all users (inside participants) exists or not.
+        const results = await Promise.allSettled(
+            participants?.map((userId) => {
+                return commonService.findByPrimaryKey(
+                    Users,
+                    userId,
+                    ["id"],
+                    false
+                );
+            })
+        );
+
+        const userNotFound = results?.filter(
+            (obj) => obj.status === "rejected" || obj.value === null
+        );
+
+        if (userNotFound && userNotFound.length) {
+            return response.error(
+                req,
+                res,
+                {
+                    msgCode: "USER_NOT_FOUND",
+                    data: "Cannot create conversations with non-existent user(s)",
+                },
+                StatusCodes.BAD_REQUEST,
+                dbTransaction
+            );
+        }
+
         const isConversationAlreadyExists = await commonService.findByCondition(
             Conversations,
             {
@@ -42,7 +78,9 @@ module.exports.createConversation = async (req, res, next) => {
                 res,
                 {
                     msgCode: "CONVERSATION_ALREADY_EXISTS",
-                    data: isConversationAlreadyExists,
+                    data: {
+                        conversation: isConversationAlreadyExists,
+                    },
                 },
                 StatusCodes.BAD_REQUEST,
                 dbTransaction
@@ -54,6 +92,8 @@ module.exports.createConversation = async (req, res, next) => {
             Conversations,
             {
                 participants,
+                isGroupChat,
+                groupName,
             },
             false,
             dbTransaction
@@ -103,7 +143,9 @@ module.exports.createConversation = async (req, res, next) => {
             res,
             {
                 msgCode: "CONVERSATION_CREATED_SUCCESSFULLY",
-                data: newConversation,
+                data: {
+                    conversation: newConversation,
+                },
             },
             StatusCodes.CREATED,
             dbTransaction
@@ -265,7 +307,7 @@ module.exports.getAllConversations = async (req, res, next) => {
             {
                 msgCode: "CONVERSATIONS_FETCHED_SUCCESSFULLY",
                 data: {
-                    conversations: allConversations
+                    conversations: allConversations,
                 },
             },
             StatusCodes.OK,

@@ -21,6 +21,16 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.ARRAY(DataTypes.UUID),
                 allowNull: false,
             },
+
+            isGroupChat: {
+                type: DataTypes.BOOLEAN,
+                allowNull: true,
+            },
+
+            groupName: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
         },
         {
             tableName: "conversations",

@@ -18,7 +18,6 @@ const useChatStore = create((set, get) => ({
 		try {
 			const response = await axiosInstance.get("/users");
 			set({ allUsers: response.data?.result?.users?.rows });
-			console.log(response);
 		} catch (error) {
 			console.error(
 				"useChatStore(): getAllUsers(): error fetching all users: error: ",
@@ -40,7 +39,7 @@ const useChatStore = create((set, get) => ({
 		set({ isLoadingConnectedUsers: true });
 		try {
 			const response = await axiosInstance.get("/conversations");
-			set({ connectedUsers: response.data?.result?.conversations });
+			set({ connectedUsers: response.data?.result?.conversations?.rows });
 		} catch (error) {
 			console.error(
 				"useChatStore(): getConnectedUsers(): error fetching all users: error: ",

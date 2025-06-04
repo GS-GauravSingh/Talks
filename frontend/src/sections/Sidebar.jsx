@@ -2,13 +2,21 @@ import { Plus } from "lucide-react";
 import React, { useState } from "react";
 import UserCard from "../components/UserCard";
 import useChatStore from "../zustand/useChatStore";
+import { useEffect } from "react";
+import UserCardSkeleton from "../components/UserCardSkeleton";
 
 function Sidebar() {
 	const {
-		isLoadingAllUsers,
-		showAllUsersComponent,
 		toggleShowAllUsersComponent,
+		isLoadingConnectedUsers,
+		getConnectedUsers,
+		connectedUsers,
 	} = useChatStore();
+
+	// Fetch all the connected users
+	useEffect(() => {
+		getConnectedUsers();
+	}, []);
 
 	return (
 		<div className="h-full w-full lg:max-w-1/4 bg-base-100 border-r border-r-base-300 flex flex-col">
@@ -24,7 +32,10 @@ function Sidebar() {
 						</span>
 					</div>
 
-					<button onClick={toggleShowAllUsersComponent} className="p-1 border border-base-200 bg-base-200 rounded-lg hover:scale-105 transition-all duration-75  text-zinc-500 hover:text-primary cursor-pointer">
+					<button
+						onClick={toggleShowAllUsersComponent}
+						className="p-1 border border-base-200 bg-base-200 rounded-lg hover:scale-105 transition-all duration-75  text-zinc-500 hover:text-primary cursor-pointer"
+					>
 						<Plus className="size-5" />
 					</button>
 				</div>
@@ -66,9 +77,15 @@ function Sidebar() {
 			{/* Users */}
 			<div className="h-full w-full overflow-auto">
 				<div className="w-full flex flex-col gap-1">
-					{new Array(10).fill("").map((element, index) => (
-						<UserCard key={index} />
-					))}
+					{isLoadingConnectedUsers
+						? new Array(10)
+								.fill("")
+								.map((element, index) => (
+									<UserCardSkeleton key={index} />
+								))
+						: Array.isArray(connectedUsers) && connectedUsers?.map((conversationDetail, index) => (
+							<UserCard key={index} conversationDetail={conversationDetail} />
+						))}
 				</div>
 			</div>
 		</div>
