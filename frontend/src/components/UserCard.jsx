@@ -1,9 +1,11 @@
 import { SendHorizonal } from "lucide-react";
 import React from "react";
 import useAuthStore from "../zustand/useAuthStore";
+import useChatStore from "../zustand/useChatStore";
 
 function UserCard({ conversationDetail, user, showStartConversationButton = false }) {
 	const { authUser } = useAuthStore();
+	const { setSelectedUser } = useChatStore();
 	const isGroupChat = conversationDetail?.isGroupChat;
 	const groupName = conversationDetail?.groupName;
 	let users = conversationDetail?.Users?.filter(
@@ -20,7 +22,7 @@ function UserCard({ conversationDetail, user, showStartConversationButton = fals
 			.toUpperCase()} ${users[0]?.lastname?.charAt(0).toUpperCase()}`;
 	}
 	return (
-		<div className="w-full bg-base-100 rounded-lg hover:bg-base-300 py-4 px-4">
+		<div onClick={() => setSelectedUser(conversationDetail)} className="w-full bg-base-100 rounded-lg hover:bg-base-300 py-4 px-4">
 			<div className="flex items-center justify-between">
 				<div className="flex flex-row items-center gap-2 truncate cursor-pointer">
 					{/* Avatar */}
