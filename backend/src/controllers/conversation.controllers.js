@@ -264,7 +264,9 @@ module.exports.getAllConversations = async (req, res, next) => {
             res,
             {
                 msgCode: "CONVERSATIONS_FETCHED_SUCCESSFULLY",
-                data: allConversations,
+                data: {
+                    conversations: allConversations
+                },
             },
             StatusCodes.OK,
             dbTransaction

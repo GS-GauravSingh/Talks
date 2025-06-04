@@ -54,7 +54,7 @@ module.exports.getAllUsers = async (req, res, next) => {
         const users = await commonService.findAllWithCount(
             Users,
             {
-                isVerified: true
+                isVerified: true,
             },
             [
                 "id",
@@ -65,7 +65,11 @@ module.exports.getAllUsers = async (req, res, next) => {
                 "bio",
                 "jobTitle",
                 "country",
+                "tagline",
                 "isVerified",
+                "createdAt",
+                "updatedAt",
+                "deletedAt",
             ],
             false,
             limit,
@@ -102,16 +106,16 @@ module.exports.updateMe = async (req, res, next) => {
 
     try {
         const { user } = req;
-        const { bio, jobTitle, country } = req.body;
+        const { bio, jobTitle, country, tagline } = req.body;
 
         // check whether the user has provided any of the fields to update.
-        if (!bio && !jobTitle && !country) {
+        if (!bio && !jobTitle && !country && !tagline) {
             return response.error(
                 req,
                 res,
                 {
                     msgCode: "MISSING_REQUIRED_FILEDS_IN_REQUEST_BODY",
-                    data: "bio, jobTitle, and country are required",
+                    data: "bio, jobTitle, country, and tagline are required",
                 },
                 StatusCodes.BAD_REQUEST,
                 dbTransaction
@@ -125,7 +129,9 @@ module.exports.updateMe = async (req, res, next) => {
             jobTitle &&
             jobTitle === user.jobTitle &&
             country &&
-            country === user.country
+            country === user.country &&
+            tagline &&
+            tagline === user.tagline
         ) {
             return response.error(
                 req,
@@ -147,6 +153,10 @@ module.exports.updateMe = async (req, res, next) => {
 
         if (country) {
             user.country = country;
+        }
+
+        if (tagline) {
+            user.tagline = tagline;
         }
 
         // save the changes

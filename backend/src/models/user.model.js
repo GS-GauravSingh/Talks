@@ -68,6 +68,12 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
             },
 
+            tagline: {
+                type: DataTypes.STRING,
+                defaultValue: "Hey there! I am using Talks.",
+                allowNull: true,
+            },
+
             otp: {
                 type: DataTypes.STRING,
                 allowNull: true,

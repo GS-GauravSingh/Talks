@@ -1,29 +1,38 @@
 import { Plus } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import UserCard from "../components/UserCard";
+import useChatStore from "../zustand/useChatStore";
 
 function Sidebar() {
+	const {
+		isLoadingAllUsers,
+		showAllUsersComponent,
+		toggleShowAllUsersComponent,
+	} = useChatStore();
+
 	return (
-		<div className="h-full w-ful lg:max-w-1/4 bg-base-300 border-r-2 border-r-base-100 flex flex-col">
-			<div className="flex flex-col p-4 py-6 space-y-2 border-b-2 border-b-base-100">
+		<div className="h-full w-full lg:max-w-1/4 bg-base-100 border-r border-r-base-300 flex flex-col">
+			<div className="flex flex-col p-4 py-6 space-y-2 border-b-2 border-b-base-300">
 				{/* Heading */}
 				<div className="flex flex-row items-center justify-between">
-					<div className="space-x-4 flex flex-row items-center">
-						<h1 className="text-lg font-bold">
+					<div className="space-x-2 sm:space-x-4 flex flex-row items-center">
+						<h1 className="text-lg font-bold text-nowrap">
 							Active conversations
 						</h1>
-						<span className="px-2 py-1 text-xs border border-base-100 bg-base-100 rounded-lg text-zinc-400">
+						<span className="px-2 py-1 text-xs border border-base-200 bg-base-200 rounded-lg text-zinc-400">
 							8
 						</span>
 					</div>
-					<div className="p-1 border border-base-100 bg-base-100 rounded-lg hover:scale-105 transition-all duration-75  text-zinc-500 hover:text-primary cursor-pointer">
+
+					<button onClick={toggleShowAllUsersComponent} className="p-1 border border-base-200 bg-base-200 rounded-lg hover:scale-105 transition-all duration-75  text-zinc-500 hover:text-primary cursor-pointer">
 						<Plus className="size-5" />
-					</div>
+					</button>
 				</div>
 			</div>
 
 			{/* Search Input */}
-			<div className="px-4 flex flex-col gap-4 py-4 border-b-2 border-b-base-100">
-				<label className="input w-full">
+			<div className="px-4 flex flex-col gap-4 py-4 border-b-2 border-b-base-300">
+				<label className="input w-full bg-base-200">
 					<svg
 						className="h-[1em] opacity-50"
 						xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +49,11 @@ function Sidebar() {
 							<path d="m21 21-4.3-4.3"></path>
 						</g>
 					</svg>
-					<input type="text" className="text-xs" placeholder="Search here..." />
+					<input
+						type="text"
+						className="text-xs"
+						placeholder="Search here..."
+					/>
 				</label>
 
 				{/* Online Users - Checkbox */}
@@ -51,8 +64,12 @@ function Sidebar() {
 			</div>
 
 			{/* Users */}
-			<div className="h-full px-4 pb-4">
-
+			<div className="h-full w-full overflow-auto">
+				<div className="w-full flex flex-col gap-1">
+					{new Array(10).fill("").map((element, index) => (
+						<UserCard key={index} />
+					))}
+				</div>
 			</div>
 		</div>
 	);
