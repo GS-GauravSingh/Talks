@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axiosInstance from "../axios/axiosInstance";
 import toast from "react-hot-toast";
 
-// creating a storeusing `create`
+// creating a store using `create`
 const useAuthStore = create((set, get) => ({
 	// `set` is used to update the state
 	// `get` is used to get the current state
@@ -18,14 +18,14 @@ const useAuthStore = create((set, get) => ({
 
 	// CHECK AUTH - checks whether user is authenticated or not
 	checkAuth: async () => {
-		try {
-			set({ isCheckingAuth: true });
+		set({ isCheckingAuth: true });
 
+		try {
 			const response = await axiosInstance.get("/user/me");
 			set({ authUser: response.data?.result?.user });
 		} catch (error) {
 			console.log(
-				"useAuthStore(): error checking authentication status: error: ",
+				"useAuthStore(): checkAuth(): error checking authentication status: error: ",
 				error
 			);
 			set({ authUser: null });
@@ -39,9 +39,9 @@ const useAuthStore = create((set, get) => ({
 		// Display a loading toast.
 		// Each toast call returns a unique id.
 		const toastId = toast.loading("Sending OTP...");
+		set({ isSigningUp: true });
 
 		try {
-			set({ isSigningUp: true });
 			const response = await axiosInstance.post("/auth/signup", formData);
 
 			// Update the loading toast to success.
@@ -55,7 +55,7 @@ const useAuthStore = create((set, get) => ({
 			// navigate user to the OTP verification page
 			navigate("/auth/verifyOTP");
 		} catch (error) {
-			console.log("registerUser(): error: ", error);
+			console.log("useAuthStore(): registerUser(): error: ", error);
 
 			// Update the loading toast to error.
 			toast.error(
@@ -76,9 +76,9 @@ const useAuthStore = create((set, get) => ({
 	// VERIFY OTP
 	verifyOTP: async (formData, navigate) => {
 		const toastId = toast.loading("Verifying OTP...");
+		set({ isSigningUp: true });
 
 		try {
-			set({ isSigningUp: true });
 			const response = await axiosInstance.post(
 				"/auth/verify-otp",
 				formData
@@ -95,7 +95,7 @@ const useAuthStore = create((set, get) => ({
 
 			navigate("/home");
 		} catch (error) {
-			console.log("verifyOTP(): error: ", error);
+			console.log("useAuthStore(): verifyOTP(): error: ", error);
 
 			// Update the loading toast to error.
 			toast.error(
@@ -116,9 +116,9 @@ const useAuthStore = create((set, get) => ({
 	// RESEND OTP
 	resendOTP: async (formData) => {
 		const toastId = toast.loading("Resending OTP...");
+		set({ isSigningUp: true });
 
 		try {
-			set({ isSigningUp: true });
 			const response = await axiosInstance.post(
 				"/auth/resend-otp",
 				formData
@@ -129,7 +129,7 @@ const useAuthStore = create((set, get) => ({
 				id: toastId,
 			});
 		} catch (error) {
-			console.log("resendOTP(): error: ", error);
+			console.log("useAuthStore(): resendOTP(): error: ", error);
 
 			// Update the loading toast to error.
 			toast.error(
@@ -150,9 +150,9 @@ const useAuthStore = create((set, get) => ({
 	// LOGIN USER
 	loginUser: async (formData, navigate) => {
 		const toastId = toast.loading("Logging in...");
+		set({ isLoggingIn: true });
 
 		try {
-			set({ isLoggingIn: true });
 			const response = await axiosInstance.post("/auth/login", formData);
 			set({ authUser: response.data?.result?.user });
 
@@ -162,7 +162,7 @@ const useAuthStore = create((set, get) => ({
 
 			navigate("/home");
 		} catch (error) {
-			console.log("loginUser(): error: ", error);
+			console.log("useAuthStore(): loginUser(): error: ", error);
 
 			toast.error(
 				error?.response?.data?.message ||
@@ -182,9 +182,9 @@ const useAuthStore = create((set, get) => ({
 	// LOGOUT USER
 	logoutUser: async (navigate) => {
 		const toastId = toast.loading("Logging out...");
+		set({ isLoggingOut: true });
 
 		try {
-			set({ isLoggingOut: true });
 			const response = await axiosInstance.post("/auth/logout");
 			set({ authUser: null });
 
@@ -194,7 +194,7 @@ const useAuthStore = create((set, get) => ({
 
 			navigate("/");
 		} catch (error) {
-			console.log("logoutUser(): error: ", error);
+			console.log("useAuthStore(): logoutUser(): error: ", error);
 
 			toast.error(
 				error?.response?.data?.message ||
@@ -214,9 +214,9 @@ const useAuthStore = create((set, get) => ({
 	// UPDATE USER AVATAR or Profile Pic
 	updateUserAvatar: async (file) => {
 		const toastId = toast.loading("Updating...");
+		set({ isUpdatingUser: true });
 
 		try {
-			set({ isUpdatingUser: true });
 			const response = await axiosInstance.patch("/user/avatar", file, {
 				headers: {
 					"Content-Type": "multipart/form-data",
@@ -227,7 +227,7 @@ const useAuthStore = create((set, get) => ({
 				id: toastId,
 			});
 		} catch (error) {
-			console.log("updateUserAvatar(): error: ", error);
+			console.log("useAuthStore(): updateUserAvatar(): error: ", error);
 
 			toast.error(
 				error?.response?.data?.message ||
@@ -246,9 +246,9 @@ const useAuthStore = create((set, get) => ({
 
 	googleAuthentication: async (formData, navigate) => {
 		const toastId = toast.loading("Authenticating, please wait...");
+		set({ isLoggingIn: true });
 
 		try {
-			set({ isLoggingIn: true });
 			const response = await axiosInstance.post(`/auth/google`, formData);
 			console.log("Google Authentication Response: ", response);
 			set({ authUser: response.data?.result?.user });
@@ -259,7 +259,7 @@ const useAuthStore = create((set, get) => ({
 
 			navigate("/home");
 		} catch (error) {
-			console.log("googleAuthentication(): error: ", error);
+			console.log("useAuthStore(): googleAuthentication(): error: ", error);
 
 			toast.error(
 				error?.response?.data?.message ||
