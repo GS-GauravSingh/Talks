@@ -3,6 +3,7 @@ import useChatStore from "../zustand/useChatStore";
 import UserCardSkeleton from "../components/UserCardSkeleton";
 import { X } from "lucide-react";
 import UserCard from "../components/UserCard";
+import useAuthStore from "../zustand/useAuthStore";
 
 function AllUsers() {
 	const {
@@ -12,6 +13,8 @@ function AllUsers() {
 		toggleShowAllUsersComponent,
 		getAllUsers,
 	} = useChatStore();
+
+	const { authUser } = useAuthStore();
 
 	// fetch all user's on component mount
 	useEffect(() => {
@@ -66,13 +69,17 @@ function AllUsers() {
 									<UserCardSkeleton key={index} />
 								))
 						: Array.isArray(allUsers)
-						? allUsers?.map((user, index) => (
-								<UserCard
-									key={index}
-									user={user}
-									showStartConversationButton={true}
-								/>
-						))
+						? allUsers?.map((user, index) =>
+								authUser.id !== user.id ? (
+									<UserCard
+										key={index}
+										user={user}
+										showStartConversationButton={true}
+									/>
+								) : (
+									""
+								)
+						  )
 						: ""}
 				</div>
 			</div>
