@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axiosInstance from "../axios/axiosInstance";
 import toast from "react-hot-toast";
+import useAuthStore from "./useAuthStore";
 
 const useChatStore = create((set, get) => ({
 	connectedUsers: [],
@@ -59,6 +60,27 @@ const useChatStore = create((set, get) => ({
 	toggleShowAllUsersComponent: () => {
 		const current = get().showAllUsersComponent;
 		set({ showAllUsersComponent: !current });
+	},
+
+	setSelectedUser: (conversationDetail, setToNull = false) => {
+		if (setToNull) {
+			set({ selectedUser: null });
+		} else {
+			const { authUser } = useAuthStore.getState(); // getState() will return an entire state object
+			const isGroupChat = conversationDetail?.isGroupChat;
+			const groupName = conversationDetail?.groupName ?? null;
+
+			let users = conversationDetail?.Users?.filter(
+				(user) => user.id !== authUser?.id
+			);
+			set({
+				selectedUser: {
+					isGroupChat,
+					groupName,
+					users,
+				},
+			});
+		}
 	},
 }));
 

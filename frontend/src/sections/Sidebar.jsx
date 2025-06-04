@@ -11,6 +11,8 @@ function Sidebar() {
 		isLoadingConnectedUsers,
 		getConnectedUsers,
 		connectedUsers,
+		setSelectedUser,
+		selectedUser
 	} = useChatStore();
 
 	// Fetch all the connected users
@@ -19,7 +21,7 @@ function Sidebar() {
 	}, []);
 
 	return (
-		<div className="h-full w-full lg:max-w-1/4 bg-base-100 border-r border-r-base-300 flex flex-col">
+		<div className={`h-full w-full ${selectedUser ? "hidden lg:block" : ""} lg:max-w-1/4 bg-base-100 border-r border-r-base-300 flex flex-col`}>
 			<div className="flex flex-col p-4 py-6 space-y-2 border-b-2 border-b-base-300">
 				{/* Heading */}
 				<div className="flex flex-row items-center justify-between">
