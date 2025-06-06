@@ -536,16 +536,13 @@ module.exports.login = async (req, res, next) => {
 
 // LOGOUT
 module.exports.logout = async (req, res, next) => {
-    const dbTransaction = await db.transaction();
-
     try {
         res.cookie("jwt", "", { maxAge: 0 });
         return response.success(
             req,
             res,
             { msgCode: "LOGOUT_SUCCESSFULL" },
-            StatusCodes.OK,
-            dbTransaction
+            StatusCodes.OK
         );
     } catch (error) {
         console.log("auth.controllers.js: logout(): error: ", error);
@@ -553,8 +550,7 @@ module.exports.logout = async (req, res, next) => {
             req,
             res,
             { msgCode: "INTERNAL_SERVER_ERROR", data: error.message },
-            StatusCodes.INTERNAL_SERVER_ERROR,
-            dbTransaction
+            StatusCodes.INTERNAL_SERVER_ERROR
         );
     }
 };
@@ -599,7 +595,7 @@ module.exports.googleAuthentication = async (req, res, next) => {
                 "isVerified",
                 "createdAt",
                 "updatedAt",
-                "deletedAt"
+                "deletedAt",
             ],
             []
         );
@@ -665,8 +661,7 @@ module.exports.googleAuthentication = async (req, res, next) => {
                 }
 
                 user = updatedUser[1];
-            }
-            else{
+            } else {
                 user = result.rows[0];
             }
         }
@@ -716,7 +711,9 @@ module.exports.googleAuthentication = async (req, res, next) => {
             req,
             res,
             {
-                msgCode: isNewUserCreated ? "SIGNUP_SUCCESSFULL" : "LOGIN_SUCCESSFULL",
+                msgCode: isNewUserCreated
+                    ? "SIGNUP_SUCCESSFULL"
+                    : "LOGIN_SUCCESSFULL",
                 data: {
                     user: {
                         ...JSON.parse(JSON.stringify(user)),

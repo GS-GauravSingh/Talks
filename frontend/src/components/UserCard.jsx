@@ -3,16 +3,18 @@ import React from "react";
 import useAuthStore from "../zustand/useAuthStore";
 import useChatStore from "../zustand/useChatStore";
 
-function UserCard({ conversationDetail, user, showStartConversationButton = false }) {
+function UserCard({ conversationDetail, user, createConversation }) {
 	const { authUser } = useAuthStore();
-	const { setSelectedUser } = useChatStore();
+	const { setSelectedUser, startConveration } = useChatStore();
 	const isGroupChat = conversationDetail?.isGroupChat;
 	const groupName = conversationDetail?.groupName;
 	let users = conversationDetail?.Users?.filter(
 		(user) => user.id !== authUser?.id
 	);
+	const showStartConversationButton =
+		createConversation?.oneToOneConversation;
 
-	if(!users){
+	if (!users) {
 		users = [user];
 	}
 	let userNameInitials;
@@ -21,8 +23,17 @@ function UserCard({ conversationDetail, user, showStartConversationButton = fals
 			.charAt(0)
 			.toUpperCase()} ${users[0]?.lastname?.charAt(0).toUpperCase()}`;
 	}
+
+	function handleStartConversation() {
+		if (createConversation?.oneToOneConversation) {
+			startConveration({
+				userIds: [user.id],
+			});
+		}
+	}
+
 	return (
-		<div onClick={() => setSelectedUser(conversationDetail)} className="w-full bg-base-100 rounded-lg hover:bg-base-300 py-4 px-4">
+		<div className="w-full bg-base-100 rounded-lg hover:bg-base-300 py-4 px-4 relative">
 			<div className="flex items-center justify-between">
 				<div className="flex flex-row items-center gap-2 truncate cursor-pointer">
 					{/* Avatar */}
@@ -80,10 +91,13 @@ function UserCard({ conversationDetail, user, showStartConversationButton = fals
 
 				{showStartConversationButton && (
 					<button
+						type="button"
 						title="Start Conversation"
-						className="cursor-pointer hover:text-primary hover:scale-120 transition-all duration-75"
+						className="group cursor-pointer absolute left-0 top-0 size-full flex items-center justify-end pr-5"
 					>
-						<SendHorizonal className="size-5" />
+						<span className="group-hover:text-primary group-hover:scale-120 transition-all duration-75">
+							<SendHorizonal className="size-5" />
+						</span>
 					</button>
 				)}
 			</div>
