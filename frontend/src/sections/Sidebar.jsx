@@ -45,7 +45,7 @@ function Sidebar() {
 
 			{/* Search Input */}
 			<div className="px-4 flex flex-col gap-4 py-4 border-b-2 border-b-base-300">
-				<label className="input w-full bg-base-200">
+				<label className="input w-full bg-base-200 rounded-lg">
 					<svg
 						className="h-[1em] opacity-50"
 						xmlns="http://www.w3.org/2000/svg"

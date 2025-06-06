@@ -57,7 +57,7 @@ function Navbar() {
 							<>
 								<Link
 									to="/home"
-									className="btn btn-sm gap-2 transition-colors"
+									className="btn btn-sm gap-2 transition-colors rounded-lg"
 								>
 									<House className="size-4" />
 									<span className="hidden sm:inline">
@@ -67,7 +67,7 @@ function Navbar() {
 
 								<Link
 									to="/profile"
-									className="btn btn-sm gap-2 transition-colors"
+									className="btn btn-sm gap-2 transition-colors rounded-lg"
 								>
 									<User className="size-4" />
 									<span className="hidden sm:inline">
@@ -79,7 +79,7 @@ function Navbar() {
 
 						<Link
 							to="/settings"
-							className="btn btn-sm gap-2 transition-colors"
+							className="btn btn-sm gap-2 transition-colors rounded-lg"
 						>
 							<Settings className="size-4" />
 							<span className="hidden sm:inline">Settings</span>
@@ -88,7 +88,7 @@ function Navbar() {
 						{authUser && (
 							<button
 								onClick={showLogoutConfirmatonToast}
-								className="btn btn-sm gap-2 transition-colors"
+								className="btn btn-sm gap-2 transition-colors rounded-lg"
 							>
 								<LogOut className="size-4" />
 								<span className="hidden sm:inline">Logout</span>

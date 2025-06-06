@@ -235,7 +235,14 @@ module.exports.getMessageHistory = async (req, res, next) => {
                 conversationId: conversationId,
             },
             {},
-            [],
+            [
+                "id",
+                "senderId",
+                "conversationId",
+                "message",
+                "image",
+                "createdAt",
+            ],
             [
                 "id",
                 "firstname",
@@ -246,6 +253,7 @@ module.exports.getMessageHistory = async (req, res, next) => {
                 "jobTitle",
                 "country",
                 "isVerified",
+                "tagline",
             ],
             false
         );

@@ -5,9 +5,7 @@ import { BrowserRouter } from "react-router";
 import AppRoutes from "./routes";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-	<React.StrictMode>
-		<BrowserRouter>
-			<AppRoutes />
-		</BrowserRouter>
-	</React.StrictMode>
+	<BrowserRouter>
+		<AppRoutes />
+	</BrowserRouter>
 );
