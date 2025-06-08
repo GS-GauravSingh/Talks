@@ -33,7 +33,14 @@ function UserCard({ conversationDetail, user, createConversation }) {
 	}
 
 	return (
-		<div className="w-full bg-base-100 rounded-lg hover:bg-base-300 py-4 px-4 relative">
+		<div
+			onClick={() =>
+				showStartConversationButton
+					? ""
+					: setSelectedUser(conversationDetail)
+			}
+			className="w-full bg-base-100 rounded-lg hover:bg-base-300 py-4 px-4 relative"
+		>
 			<div className="flex items-center justify-between">
 				<div className="flex flex-row items-center gap-2 truncate cursor-pointer">
 					{/* Avatar */}
@@ -92,6 +99,7 @@ function UserCard({ conversationDetail, user, createConversation }) {
 				{showStartConversationButton && (
 					<button
 						type="button"
+						onClick={handleStartConversation}
 						title="Start Conversation"
 						className="group cursor-pointer absolute left-0 top-0 size-full flex items-center justify-end pr-5"
 					>

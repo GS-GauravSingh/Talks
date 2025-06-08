@@ -12,7 +12,7 @@ function Sidebar() {
 		getConnectedUsers,
 		connectedUsers,
 		setSelectedUser,
-		selectedUser
+		selectedUser,
 	} = useChatStore();
 
 	// Fetch all the connected users
@@ -21,8 +21,12 @@ function Sidebar() {
 	}, []);
 
 	return (
-		<div className={`h-full w-full ${selectedUser ? "hidden lg:block" : ""} lg:max-w-1/4 bg-base-100 border-r border-r-base-300 flex flex-col`}>
-			<div className="flex flex-col p-4 py-6 space-y-2 border-b-2 border-b-base-300">
+		<div
+			className={`size-full ${
+				selectedUser ? "hidden lg:flex" : ""
+			} lg:max-w-1/4 bg-base-100 border-r border-r-base-300 flex flex-col`}
+		>
+			<div className="w-full h-fit flex flex-col p-4 py-6 space-y-2 border-b-2 border-b-base-300">
 				{/* Heading */}
 				<div className="flex flex-row items-center justify-between">
 					<div className="space-x-2 sm:space-x-4 flex flex-row items-center">
@@ -44,7 +48,7 @@ function Sidebar() {
 			</div>
 
 			{/* Search Input */}
-			<div className="px-4 flex flex-col gap-4 py-4 border-b-2 border-b-base-300">
+			<div className="w-full h-fit px-4 flex flex-col gap-4 py-4 border-b-2 border-b-base-300">
 				<label className="input w-full bg-base-200 rounded-lg">
 					<svg
 						className="h-[1em] opacity-50"
@@ -77,18 +81,20 @@ function Sidebar() {
 			</div>
 
 			{/* Users */}
-			<div className="h-full w-full overflow-auto">
-				<div className="w-full flex flex-col gap-1">
-					{isLoadingConnectedUsers
-						? new Array(10)
-								.fill("")
-								.map((element, index) => (
-									<UserCardSkeleton key={index} />
-								))
-						: Array.isArray(connectedUsers) && connectedUsers?.map((conversationDetail, index) => (
-							<UserCard key={index} conversationDetail={conversationDetail} />
-						))}
-				</div>
+			<div className="h-full flex flex-col overflow-auto ">
+				{isLoadingConnectedUsers
+					? new Array(10)
+							.fill("")
+							.map((element, index) => (
+								<UserCardSkeleton key={index} />
+							))
+					: Array.isArray(connectedUsers) &&
+					  connectedUsers?.map((conversationDetail, index) => (
+							<UserCard
+								key={index}
+								conversationDetail={conversationDetail}
+							/>
+					  ))}
 			</div>
 		</div>
 	);
