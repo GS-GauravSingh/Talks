@@ -23,7 +23,7 @@ function index() {
 	}
 
 	return (
-		<div data-theme={theme} className="">
+		<div data-theme={theme} className="h-screen w-screen">
 			{/* Navbar */}
 			<Navbar />
 

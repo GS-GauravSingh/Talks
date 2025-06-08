@@ -3,7 +3,6 @@ import useChatStore from "../zustand/useChatStore";
 import useAuthStore from "../zustand/useAuthStore";
 import { ArrowLeft, ArrowLeftCircle, Image, SendIcon, X } from "lucide-react";
 import TextMessage from "../components/messages/TextMessage";
-import Emojipicker from "../components/EmojiPickerComponent";
 import EmojiPickerComponent from "../components/EmojiPickerComponent";
 import toast from "react-hot-toast";
 import MessageSkeleton from "../components/messages/MessageSkeleton";
@@ -40,7 +39,7 @@ function Messages() {
 
 	useEffect(() => {
 		// Scroll to the last message when messages update
-		// lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+		lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
 	}, [messages]); // Runs when `messages` change
 
 	// Get Messages history on component mount
@@ -61,7 +60,8 @@ function Messages() {
 	}
 
 	function handleRemoveImagePreview() {
-		setShowImagePreview(null);
+		setShowImagePreview(false);
+		setFile(null);
 		if (fileInputRef.current) {
 			fileInputRef.current.value =
 				""; /* clears the selected file, resetting the file input. */
@@ -91,6 +91,9 @@ function Messages() {
 	}
 
 	function getMessageDay(createdAt) {
+		if(!createdAt){
+			return null;
+		}
 		const createdDate = new Date(createdAt);
 
 		// Reset hours to compare just the date part
@@ -242,8 +245,8 @@ function Messages() {
 								);
 
 								return (
-									<>
-										{showSeparator ? (
+									<React.Fragment key={index}>
+										{showSeparator && prevSeparatorDay ? (
 											<Separator
 												timestamp={getMessageDay(
 													message?.createdAt
@@ -253,7 +256,6 @@ function Messages() {
 											""
 										)}
 										<TextMessage
-											key={index}
 											type={messageType}
 											author={author}
 											message={message?.message}
@@ -262,7 +264,7 @@ function Messages() {
 											timestamp={timestamp}
 											readReceipt
 										/>
-									</>
+									</React.Fragment>
 								);
 						  })}
 				</div>
