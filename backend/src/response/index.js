@@ -57,11 +57,11 @@ function getUserPreferredLanguage(acceptLanguageHeader) {
 }
 
 /**
- * @param {Object} req 
- * @param {Object} res 
- * @param {Object} error 
- * @param {Number} httpStatusCode 
- * @param {Object} dbTransaction 
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} error
+ * @param {Number} httpStatusCode
+ * @param {Object} dbTransaction
  */
 module.exports.success = async function (
     req,
@@ -110,11 +110,11 @@ module.exports.success = async function (
 };
 
 /**
- * @param {Object} req 
- * @param {Object} res 
- * @param {Object} error 
- * @param {Number} httpStatusCode 
- * @param {Object} dbTransaction 
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Object} error
+ * @param {Number} httpStatusCode
+ * @param {Object} dbTransaction
  */
 module.exports.error = async function (
     req,
@@ -159,5 +159,22 @@ module.exports.error = async function (
             result: "",
             time: Date.now(),
         });
+    }
+};
+
+module.exports.SocketError = class SocketError extends Error {
+    constructor(error, httpStatusCode) {
+        // get the user preferred language
+        const lng = socket.handshake.auth?.language || "en";
+        const message =
+            (lngMsg[lng]
+                ? lngMsg[lng][error.msgCode]
+                : lngMsg["en"]["INTERNAL_SERVER_ERROR"]) ??
+            getReasonPhrase(httpStatusCode);
+        super(message);
+        this.statusCode = httpStatusCode || 500;
+        this.data = error.data || "Something went wrong!!";
+
+        Error.captureStackTrace(this, this.constructor);
     }
 };
