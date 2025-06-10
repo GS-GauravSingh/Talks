@@ -89,6 +89,17 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: false,
                 allowNull: true,
             },
+
+            socketId: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+
+            status: {
+                type: DataTypes.ENUM("ONLINE", "OFFLINE"),
+                defaultValue: "OFFLINE",
+                allowNull: false,
+            },
         },
         {
             tableName: "users",
