@@ -127,15 +127,7 @@ module.exports.verifySocketJwtToken = async (socket, next) => {
             console.log(
                 "verifyAuthToken.middleware.js: verifySocketJwtToken(): error: No token provided"
             );
-            return next(
-                new response.SocketError(
-                    {
-                        msgCode: "UNAUTHORIZED",
-                        data: "Unauthorized, token not provided",
-                    },
-                    StatusCodes.UNAUTHORIZED
-                )
-            );
+            return next(new Error("UNAUTHORIZED: No token provided"));
         }
 
         const decoded = verifyJWT(token);
@@ -144,12 +136,8 @@ module.exports.verifySocketJwtToken = async (socket, next) => {
                 "verifyAuthToken.middleware.js: verifySocketJwtToken(): error: Invalid token"
             );
             return next(
-                new response.SocketError(
-                    {
-                        msgCode: "UNAUTHORIZED",
-                        data: "Invalid token, either the token was expired or the user have changed their password recently",
-                    },
-                    StatusCodes.UNAUTHORIZED
+                new Error(
+                    "Invalid token, either the token was expired or the user have changed their password recently"
                 )
             );
         }
@@ -181,12 +169,8 @@ module.exports.verifySocketJwtToken = async (socket, next) => {
                 "verifyAuthToken.middleware.js: verifySocketJwtToken(): error: User not found"
             );
             return next(
-                new response.SocketError(
-                    {
-                        msgCode: "UNAUTHORIZED",
-                        data: "User not found: User belonging to this token no longer exists",
-                    },
-                    StatusCodes.UNAUTHORIZED
+                new Error(
+                    "User not found: User belonging to this token no longer exists"
                 )
             );
         }
@@ -195,13 +179,10 @@ module.exports.verifySocketJwtToken = async (socket, next) => {
             console.log(
                 "verifyAuthToken.middleware.js: verifySocketJwtToken(): error: Token is not valid after password change"
             );
+
             return next(
-                new response.SocketError(
-                    {
-                        msgCode: "UNAUTHORIZED",
-                        data: "Invalid token: The user have recently changed their password",
-                    },
-                    StatusCodes.UNAUTHORIZED
+                new Error(
+                    "Invalid token: The user have recently changed their password"
                 )
             );
         }
@@ -214,12 +195,9 @@ module.exports.verifySocketJwtToken = async (socket, next) => {
             error.message
         );
         return next(
-            new response.SocketError(
-                {
-                    msgCode: "UNAUTHORIZED",
-                    data: error.message,
-                },
-                StatusCodes.UNAUTHORIZED
+            new Error(
+                error.message ||
+                    "UNAUTHORIZED: An error occurred while verifying the token"
             )
         );
     }

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axiosInstance from "../axios/axiosInstance";
 import toast from "react-hot-toast";
+import useSocketStore from "./useSocketStore";
 
 // creating a store using `create`
 const useAuthStore = create((set, get) => ({
@@ -93,6 +94,10 @@ const useAuthStore = create((set, get) => ({
 			// Delete the user email from the session storage once the OTP is verified.
 			sessionStorage.removeItem("userEmail");
 
+			// establish socket connection after successful signup
+			useSocketStore.getState().connectSocket();
+
+			// navigate user to the home page
 			navigate("/home");
 		} catch (error) {
 			console.log("useAuthStore(): verifyOTP(): error: ", error);
@@ -160,6 +165,10 @@ const useAuthStore = create((set, get) => ({
 				id: toastId,
 			});
 
+			// establish socket connection after successful login
+			useSocketStore.getState().connectSocket();
+
+			// navigate user to the home page
 			navigate("/home");
 		} catch (error) {
 			console.log("useAuthStore(): loginUser(): error: ", error);
@@ -191,6 +200,9 @@ const useAuthStore = create((set, get) => ({
 			toast.success(response.data.message, {
 				id: toastId,
 			});
+
+			// Disconnect the socket after logout
+			useSocketStore.getState().disconnectSocket();
 
 			navigate("/");
 		} catch (error) {
@@ -257,9 +269,16 @@ const useAuthStore = create((set, get) => ({
 				id: toastId,
 			});
 
+			// establish socket connection after successful login
+			useSocketStore.getState().connectSocket();
+
+			// navigate user to the home page
 			navigate("/home");
 		} catch (error) {
-			console.log("useAuthStore(): googleAuthentication(): error: ", error);
+			console.log(
+				"useAuthStore(): googleAuthentication(): error: ",
+				error
+			);
 
 			toast.error(
 				error?.response?.data?.message ||
