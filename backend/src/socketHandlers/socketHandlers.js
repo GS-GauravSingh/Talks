@@ -9,7 +9,6 @@ module.exports.newConnectionHandler = async ({ socket, io, onlineUsers }) => {
 
     try {
         const { user } = socket;
-        console.log(`Socket: `, socket);
         console.log(`User with socket Id: ${socket.id} connected`);
 
         // update the user - store the socket id and update its status to online
@@ -32,12 +31,12 @@ module.exports.newConnectionHandler = async ({ socket, io, onlineUsers }) => {
         onlineUsers[updatedUser.id] = socket.id;
 
         // commit the transaction
-        await db.commit();
+        await dbTransaction.commit();
 
         // Broadcast to everyone that the new user is connected.
         // `broadcast` is used to send an event to all connected clients except the sender.
         // `emit` is used to send an event to a specific client or group of clients.
-        socket.broadcast.emit("USER_ONLINE", {
+        socket.broadcast.emit("userOnline", {
             message: `${user.firstname} ${user.lastname} is online.`,
             user: updatedUser,
         });
@@ -51,7 +50,7 @@ module.exports.newConnectionHandler = async ({ socket, io, onlineUsers }) => {
         await dbTransaction.rollback();
 
         // Optional: Send a custom error back to this client
-        socket.emit("SOCKET_ERROR", {
+        socket.emit("error", {
             status: "error",
             message: error.message,
         });
@@ -97,7 +96,7 @@ module.exports.disconnectHandler = async ({ socket, io, onlineUsers }) => {
         // Broadcast to everyone that the user is disconnected.
         // `broadcast` is used to send an event to all connected clients except the sender.
         // `emit` is used to send an event to a specific client or group of clients.
-        socket.broadcast.emit("USER_OFFLINE", {
+        socket.broadcast.emit("userOffline", {
             message: `${user.firstname} ${user.lastname} is offline.`,
             user: updatedUser,
         });
@@ -108,7 +107,7 @@ module.exports.disconnectHandler = async ({ socket, io, onlineUsers }) => {
         await dbTransaction.rollback();
 
         // Optional: Send a custom error back to this client
-        socket.emit("SOCKET_ERROR", {
+        socket.emit("error", {
             status: "error",
             message: error.message,
         });

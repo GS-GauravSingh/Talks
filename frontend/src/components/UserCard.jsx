@@ -2,12 +2,15 @@ import { SendHorizonal } from "lucide-react";
 import React from "react";
 import useAuthStore from "../zustand/useAuthStore";
 import useChatStore from "../zustand/useChatStore";
+import useSocketStore from "../zustand/useSocketStore";
 
-function UserCard({ conversationDetail, user, createConversation }) {
+function UserCard({ conversationDetail, user, createConversation, showOnlineUsers = false }) {
 	const { authUser } = useAuthStore();
 	const { setSelectedUser, startConveration } = useChatStore();
+	const { onlineUsers } = useSocketStore();
 	const isGroupChat = conversationDetail?.isGroupChat;
 	const groupName = conversationDetail?.groupName;
+	let isUserOnline = false;
 	let users = conversationDetail?.Users?.filter(
 		(user) => user.id !== authUser?.id
 	);
@@ -17,6 +20,19 @@ function UserCard({ conversationDetail, user, createConversation }) {
 	if (!users) {
 		users = [user];
 	}
+
+	for (const user of users ?? []) {
+		if(onlineUsers?.includes(user.id))
+		{
+			isUserOnline = true;
+			break;
+		}
+	}
+
+	if(showOnlineUsers && !isUserOnline){
+		return;
+	}
+
 	let userNameInitials;
 	if (!isGroupChat) {
 		userNameInitials = `${users[0]?.firstname
@@ -51,7 +67,7 @@ function UserCard({ conversationDetail, user, createConversation }) {
 							</div>
 						</div>
 					) : users[0]?.avatar ? (
-						<div className="avatar avatar-online">
+						<div className={`avatar ${isUserOnline ? "avatar-online" : ""} `}>
 							<div className="size-10 rounded-full">
 								<img
 									src={

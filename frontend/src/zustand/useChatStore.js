@@ -160,6 +160,7 @@ const useChatStore = create((set, get) => ({
 			);
 
 			console.log(response);
+			get().getConnectedUsers(); // after starting a new conversation - fetch all the connected users again.
 			toast.success(response.data.message, {
 				id: toastId,
 			});

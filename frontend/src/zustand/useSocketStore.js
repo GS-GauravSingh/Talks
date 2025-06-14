@@ -30,13 +30,16 @@ const useSocketStore = create((set, get) => ({
 		const socket = io(import.meta.env.VITE_BACKEND_BASE_URL, {
 			autoConnect: false, // prevents auto connection
 			withCredentials: true, // allows cookies to be sent when making the WebSocket requests.
-			query: {
-				userId: authUser.id, // pass the user ID as a query parameter
-			},
 		});
 
 		socket.connect();
 		set({ socket: socket });
+
+		// "connect" is a default event from "socket.io-client".
+		// It fires automatically when the client socket successfully connects to the server.
+		socket.on("connect", () => {
+			get().getOnlineUsers();
+		});
 	},
 
 	// DISCONNECT SOCKET
@@ -55,7 +58,7 @@ const useSocketStore = create((set, get) => ({
 	getOnlineUsers: () => {
 		const { socket } = get();
 		if (socket && socket.connected) {
-			socket.on("ONLINE_USERS", (data) => {
+			socket.on("getOnlineUsers", (data) => {
 				console.log("Online users: ", data.onlineUsers);
 				set({ onlineUsers: data.onlineUsers });
 			});

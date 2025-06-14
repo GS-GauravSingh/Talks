@@ -15,10 +15,17 @@ function Sidebar() {
 		selectedUser,
 	} = useChatStore();
 
+	const [ showOnlineUsers, setShowOnlineUsers ] = useState(false);
+
 	// Fetch all the connected users
 	useEffect(() => {
 		getConnectedUsers();
 	}, []);
+
+	function handleShowOnlineUsers(event){
+		console.log("Show Online Users: ", event.target.checked);
+		setShowOnlineUsers(event.target.checked);
+	}
 
 	return (
 		<div
@@ -26,7 +33,7 @@ function Sidebar() {
 				selectedUser ? "hidden lg:flex" : ""
 			} lg:max-w-1/4 bg-base-100 border-r border-r-base-300 flex flex-col`}
 		>
-			<div className="w-full h-fit flex flex-col p-4 py-6 space-y-2 border-b-2 border-b-base-300">
+			<div className="w-full h-fit flex flex-col p-4 py-6 space-y-2 border-b border-b-base-300">
 				{/* Heading */}
 				<div className="flex flex-row items-center justify-between">
 					<div className="space-x-2 sm:space-x-4 flex flex-row items-center">
@@ -48,7 +55,7 @@ function Sidebar() {
 			</div>
 
 			{/* Search Input */}
-			<div className="w-full h-fit px-4 flex flex-col gap-4 py-4 border-b-2 border-b-base-300">
+			<div className="w-full h-fit px-4 flex flex-col gap-4 py-4 border-b border-b-base-300">
 				<label className="input w-full bg-base-200 rounded-lg">
 					<svg
 						className="h-[1em] opacity-50"
@@ -75,7 +82,7 @@ function Sidebar() {
 
 				{/* Online Users - Checkbox */}
 				<div className="flex flex-row gap-2 items-center">
-					<input type="checkbox" className="checkbox checkbox-xs" />
+					<input type="checkbox" className="checkbox checkbox-xs" onChange={handleShowOnlineUsers} />
 					<p className="text-xs">Show online only</p>
 				</div>
 			</div>
@@ -93,6 +100,7 @@ function Sidebar() {
 							<UserCard
 								key={index}
 								conversationDetail={conversationDetail}
+								showOnlineUsers={showOnlineUsers}
 							/>
 					  ))}
 			</div>

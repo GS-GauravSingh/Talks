@@ -150,7 +150,7 @@ function VerifyOTP() {
 									key={index}
 									required
 									type="text"
-									className="input input-md text-center"
+									className="input input-md text-center bg-base-200"
 									value={value}
 									onChange={(event) =>
 										handleOnChange(event, index)

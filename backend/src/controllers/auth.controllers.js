@@ -580,24 +580,7 @@ module.exports.googleAuthentication = async (req, res, next) => {
         const result = await commonService.findAllWithOneAssociatedModel(
             Users,
             OAuthAccounts,
-            { email: email },
-            {},
-            [
-                "id",
-                "firstname",
-                "lastname",
-                "email",
-                "password",
-                "avatar",
-                "jobTitle",
-                "bio",
-                "country",
-                "isVerified",
-                "createdAt",
-                "updatedAt",
-                "deletedAt",
-            ],
-            []
+            { email: email }
         );
 
         // Case 1: User doesn't exists

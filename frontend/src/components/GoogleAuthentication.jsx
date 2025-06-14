@@ -30,7 +30,7 @@ function GoogleAuthentication() {
 	return (
 		<button
 			type="button"
-			className="btn bg-white text-black border-[#e5e5e5] w-full"
+			className="btn bg-white shadow-xl w-full"
 			title="Google Authenticator"
 			onClick={handleGoogleLogin}
 		>

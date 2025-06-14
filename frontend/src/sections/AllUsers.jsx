@@ -29,12 +29,12 @@ function AllUsers() {
 	return (
 		<div
 			className={`${
-				showAllUsersComponent ? "absolute top-0 left-0 " : "hidden"
-			} h-full w-full z-[999] bg-base-100`}
+				showAllUsersComponent ? "absolute top-0 left-0 size-full" : "hidden"
+			} overflow-hidden z-[999] bg-base-100`}
 		>
-			<div className="container h-full flex flex-col">
+			<div className="size-full flex flex-col">
 				{/* Search Input */}
-				<div className="flex flex-col justify-center gap-4 py-4 border-b-2 border-b-base-100 relative">
+				<div className="flex flex-col justify-center gap-4 py-4 relative">
 					<div className="flex items-center justify-center gap-4 relative">
 						<label className="input w-full bg-base-200 max-w-2xl">
 							<svg
@@ -139,7 +139,7 @@ function AllUsers() {
 				</div>
 
 				{/* Users List */}
-				<div className="mx-auto w-full h-full overflow-y-scroll border border-base-100 bg-base-100 shadow-2xl rounded-lg space-y-1 p-2">
+				<div className="mx-auto size-full overflow-y-scroll border border-base-100 bg-base-100 rounded-lg space-y-1 p-2">
 					{isLoadingAllUsers
 						? new Array(10)
 								.fill("")

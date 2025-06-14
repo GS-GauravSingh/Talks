@@ -62,7 +62,7 @@ io.on("connection", (socket) => {
 
 // Emit online users every 10 seconds to all connected clients.
 setInterval(() => {
-    io.emit("ONLINE_USERS", {
+    io.emit("getOnlineUsers", {
         onlineUsers: Object.keys(onlineUsers),
     });
 }, 10000);

@@ -95,10 +95,10 @@ function Signup() {
 	}, [errors]);
 
 	return (
-		<div className="min-h-screen grid place-content-center grid-rows-1 lg:grid-cols-2 pt-16">
+		<div className="min-h-screen grid place-content-center grid-rows-1 grid-cols-1 lg:!grid-cols-2 pt-16 bg-base-100 !overflow-x-hidden">
 			{/* Left Side */}
-			<div className="flex flex-col items-center justify-center p-6 sm:p-12">
-				<div className="w-full max-w-md space-y-8 ">
+			<div className="p-2 sm:p-4 flex items-center justify-center">
+				<div className="w-full max-w-md space-y-8 overflow-hidden">
 					{/* LOGO */}
 					<div className="text-center mb-8">
 						<div className="flex flex-col items-center gap-2 group">
@@ -121,7 +121,7 @@ function Signup() {
 						className="space-y-4 w-full"
 					>
 						{/* Firstname */}
-						<label className="input validator w-full">
+						<label className="input validator w-full bg-base-200">
 							<svg
 								className="h-[1em] opacity-50"
 								xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +149,7 @@ function Signup() {
 						</label>
 
 						{/* Lastname */}
-						<label className="input validator w-full">
+						<label className="input validator w-full bg-base-200">
 							<svg
 								className="h-[1em] opacity-50"
 								xmlns="http://www.w3.org/2000/svg"
@@ -177,7 +177,7 @@ function Signup() {
 						</label>
 
 						{/* Email */}
-						<label className="input validator w-full">
+						<label className="input validator w-full bg-base-200">
 							<svg
 								className="h-[1em] opacity-50"
 								xmlns="http://www.w3.org/2000/svg"
@@ -210,7 +210,7 @@ function Signup() {
 						</label>
 
 						{/* Password */}
-						<label className="input validator w-full">
+						<label className="input validator w-full bg-base-200">
 							<svg
 								className="h-[1em] opacity-50"
 								xmlns="http://www.w3.org/2000/svg"
@@ -281,6 +281,7 @@ function Signup() {
 					</form>
 				</div>
 			</div>
+
 
 			{/* Right Side */}
 			<AuthImagePattern

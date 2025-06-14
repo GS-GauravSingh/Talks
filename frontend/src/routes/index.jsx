@@ -7,9 +7,12 @@ import Loader from "../components/Loader";
 import { Toaster } from "react-hot-toast";
 import useThemeStore from "../zustand/useThemeStore";
 import useChatStore from "../zustand/useChatStore";
+import useSocketStore from "../zustand/useSocketStore";
 
 function index() {
 	const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
+	const { socket, onlineUsers, connectSocket, getOnlineUsers } =
+		useSocketStore();
 	const { theme } = useThemeStore();
 	const { showAllUsersComponent } = useChatStore();
 
@@ -17,13 +20,21 @@ function index() {
 		checkAuth();
 	}, [checkAuth]);
 
+	useEffect(() => {
+		connectSocket();
+	}, [authUser]);
+
+	useEffect(() => {
+		console.log(onlineUsers);
+	}, [onlineUsers])
+
 	// Loading Screen
 	if (isCheckingAuth && !authUser) {
 		return <Loader />;
 	}
 
 	return (
-		<div data-theme={theme} className="h-screen w-screen">
+		<div data-theme={theme} className="min-h-screen">
 			{/* Navbar */}
 			<Navbar />
 
@@ -66,9 +77,7 @@ function index() {
 			{/* React-Hot-Toast */}
 			<Toaster position="top-center" />
 
-			{
-				showAllUsersComponent && <AllUsers />
-			}
+			{showAllUsersComponent && <AllUsers />}
 		</div>
 	);
 }
