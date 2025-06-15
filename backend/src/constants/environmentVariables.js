@@ -5,7 +5,7 @@ require("dotenv").config({
 
 const environmentVariables = {
     PORT: process.env.PORT || "8000",
-    allowedOrigin: process.env.FRONTEND_URL || "*",
+    allowedOrigin: process.env.ALLOWED_ORIGINS?.split(",") || "*",
     DB_USER_NAME: process.env.DB_USER_NAME,
     DB_USER_PASSWORD: process.env.DB_USER_PASSWORD,
     DB_NAME: process.env.DB_NAME,
@@ -21,7 +21,6 @@ const environmentVariables = {
     MAX_FILE_SIZE: process.env.MAX_FILE_SIZE || 1, // in MB
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    FRONTEND_URL: process.env.FRONTEND_URL
 
 };
 

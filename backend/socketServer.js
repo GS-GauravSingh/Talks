@@ -14,7 +14,16 @@ const httpServer = http.createServer(app);
 // This allows real-time communication using WebSockets alongside regular HTTP requests on the same existing HTTP server.
 const io = new Server(httpServer, {
     cors: {
-        origin: environmentVariables.FRONTEND_URL,
+        origin: function (origin, callback) {
+            if (
+                !origin ||
+                environmentVariables.allowedOrigin.includes(origin)
+            ) {
+                callback(null, true);
+            } else {
+                callback(new Error("Origin not allowed by CORS"));
+            }
+        },
         methods: ["GET", "POST"],
         credentials: true /* allow cookies */,
     },
