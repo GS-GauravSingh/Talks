@@ -9,11 +9,16 @@ function TextMessage({
 	avatar = "",
 	ref = "",
 	author = "",
+	isUserOnline = false,
 }) {
 	if (type === "incomming" && message) {
 		return (
 			<div ref={ref} className="chat chat-start">
-				<div className="chat-image avatar">
+				<div
+					className={`chat-image avatar ${
+						isUserOnline ? "avatar-online" : ""
+					}`}
+				>
 					<div className="w-10 rounded-full">
 						<img alt={author} src={avatar} />
 					</div>
@@ -26,7 +31,7 @@ function TextMessage({
 				<div className="chat-footer opacity-50">{timestamp}</div>
 			</div>
 		);
-	} else if(type === "outgoing" && message){
+	} else if (type === "outgoing" && message) {
 		return (
 			<div ref={ref} className="chat chat-end">
 				{/* <div className="chat-image avatar">
@@ -43,15 +48,18 @@ function TextMessage({
 					</div> */}
 				<div className="chat-bubble">{message}</div>
 				<div className="chat-footer opacity-50">
-					{readReceipt === "sent" ? (
-						<Check className="size-4" />
-					) : (
-						<CheckCheck
-							className={`${
-								readReceipt === "read" && "text-primary"
-							} size-4`}
-						/>
-					)}
+					<div className="chat-footer">{timestamp}</div>
+					<div>
+						{readReceipt === "sent" ? (
+							<Check className="size-4" />
+						) : (
+							<CheckCheck
+								className={`${
+									readReceipt === "read" && "text-primary"
+								} size-4`}
+							/>
+						)}
+					</div>
 				</div>
 			</div>
 		);

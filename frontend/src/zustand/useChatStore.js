@@ -2,6 +2,7 @@ import { create } from "zustand";
 import axiosInstance from "../axios/axiosInstance";
 import toast from "react-hot-toast";
 import useAuthStore from "./useAuthStore";
+import useSocketStore from "./useSocketStore";
 
 const useChatStore = create((set, get) => ({
 	connectedUsers: [],
@@ -181,6 +182,35 @@ const useChatStore = create((set, get) => ({
 		} finally {
 			set({ isCreatingConversation: false });
 		}
+	},
+
+	subscribeToMessages: () => {
+		const { selectedUser } = get();
+		const { socket } = useSocketStore.getState();
+		if (!selectedUser || !socket || !socket.connected) {
+			return;
+		}
+
+		const { conversationId } = selectedUser;
+		socket.emit("joinConversation", {
+			conversationId,
+		});
+
+		socket.on("newMessage", (data) => {
+			const { message } = data;
+			console.log("New Message Received: ", message);
+			set({ messages: [...get().messages, message] })
+		});
+	},
+
+	unsubscribeFromMessages: () => {
+		const { selectedUser } = get();
+		const { socket } = useSocketStore.getState();
+		if (!selectedUser || !socket || socket.connected) {
+			return;
+		}
+
+		socket.off("newMessage");
 	},
 }));
 

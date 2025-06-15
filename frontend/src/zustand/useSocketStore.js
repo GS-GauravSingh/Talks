@@ -59,7 +59,7 @@ const useSocketStore = create((set, get) => ({
 		const { socket } = get();
 		if (socket && socket.connected) {
 			socket.on("getOnlineUsers", (data) => {
-				console.log("Online users: ", data.onlineUsers);
+				// console.log("Online users: ", data.onlineUsers);
 				set({ onlineUsers: data.onlineUsers });
 			});
 		} else {

@@ -1,7 +1,8 @@
 const commonService = require("../services/common.service");
 const db = require("../models").sequelize;
 
-module.exports.newConnectionHandler = async ({ socket, io, onlineUsers }) => {
+
+module.exports.newConnectionHandler = async ({ socket, onlineUsers }) => {
     // `io` is the socket.io server instance.
     // `socket` represent an individual connected client.
 
@@ -57,7 +58,7 @@ module.exports.newConnectionHandler = async ({ socket, io, onlineUsers }) => {
     }
 };
 
-module.exports.disconnectHandler = async ({ socket, io, onlineUsers }) => {
+module.exports.disconnectHandler = async ({ socket, onlineUsers }) => {
     // `io` is the socket.io server instance.
     // `socket` represent an individual connected client.
 
@@ -112,4 +113,23 @@ module.exports.disconnectHandler = async ({ socket, io, onlineUsers }) => {
             message: error.message,
         });
     }
+};
+
+module.exports.joinConversation = ({ data, socket }) => {
+    const { conversationId } = data;
+    console.log(`User joined conversation ID: ${conversationId}`);
+
+    // "socket.join()" lets a client join a room, so events can be emitted to that room and only the clients within it will receive those events—useful for features like private chats or group conversations.
+    socket.join(conversationId);
+};
+
+module.exports.sendMessageToConversation = ({ message, io }) => {
+    console.log(
+        `Sending new message in a conversation with ID: ${message.conversationId}`
+    );
+
+    // "io.to() allows emitting an event to a specific room or a specific client (socket) if you provide the room name or the socket ID
+    io.to(message.conversationId).emit("newMessage", {
+        message: message,
+    });
 };

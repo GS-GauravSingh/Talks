@@ -24,9 +24,9 @@ function index() {
 		connectSocket();
 	}, [authUser]);
 
-	useEffect(() => {
-		console.log(onlineUsers);
-	}, [onlineUsers])
+	// useEffect(() => {
+	// 	console.log(onlineUsers);
+	// }, [onlineUsers])
 
 	// Loading Screen
 	if (isCheckingAuth && !authUser) {

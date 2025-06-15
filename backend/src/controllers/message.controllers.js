@@ -4,6 +4,9 @@ const { StatusCodes } = require("http-status-codes");
 const environmentVariables = require("../constants/environmentVariables");
 const commonService = require("../services/common.service");
 const cloudinaryUtils = require("../utils/cloudinary.util");
+const socketHandlers = require("../socketHandlers/socketHandlers");
+const { getIo } = require("../../socketServer");
+const { getPagination } = require("../config/helper");
 
 // SEND MESSAGE - sends a message to any particular conversation
 module.exports.sendMessage = async (req, res, next) => {
@@ -15,6 +18,7 @@ module.exports.sendMessage = async (req, res, next) => {
         const { message } = req.body;
         const { Conversations, Messages } = db.models;
         const fileObj = req.file;
+        const io = getIo();
         console.log("file: ", fileObj);
 
         if (!message && !fileObj) {
@@ -98,6 +102,17 @@ module.exports.sendMessage = async (req, res, next) => {
                 dbTransaction
             );
         }
+
+        // Sending Message in real-time using socket.io
+        socketHandlers.sendMessageToConversation({
+            message: {
+                ...newMessage,
+                User: {
+                    ...JSON.parse(JSON.stringify(user)),
+                },
+            },
+            io,
+        });
 
         return response.success(
             req,
@@ -208,6 +223,14 @@ module.exports.getMessageHistory = async (req, res, next) => {
         const { user } = req;
         const { conversationId } = req.params;
         const { Conversations, Messages, Users } = db.models;
+        const {
+            page,
+            size,
+            sort_by = "createdAt",
+            sort_order = "ASC",
+        } = req.query;
+        const { limit, offset } = getPagination({ page, size });
+        const order = [[sort_by, sort_order]];
 
         // find whether conversation with id `conversationId` exists or not.
         const isConversationExists = await commonService.findByPrimaryKey(
@@ -255,7 +278,10 @@ module.exports.getMessageHistory = async (req, res, next) => {
                 "isVerified",
                 "tagline",
             ],
-            false
+            false,
+            limit,
+            order,
+            offset
         );
 
         return response.success(

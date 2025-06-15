@@ -7,6 +7,7 @@ import EmojiPickerComponent from "../components/EmojiPickerComponent";
 import toast from "react-hot-toast";
 import MessageSkeleton from "../components/messages/MessageSkeleton";
 import Separator from "../components/Separator";
+import useSocketStore from "../zustand/useSocketStore";
 
 function Messages() {
 	const {
@@ -16,9 +17,13 @@ function Messages() {
 		sendMessage,
 		getMessageHistory,
 		messages,
+		subscribeToMessages,
+		unsubscribeFromMessages,
 	} = useChatStore();
 	const { authUser } = useAuthStore();
+	const { onlineUsers } = useSocketStore();
 
+	let isUserOnline = false;
 	const users = selectedUser?.users;
 	const isGroupChat = selectedUser?.isGroupChat;
 	const conversationId = selectedUser?.conversationId;
@@ -28,6 +33,13 @@ function Messages() {
 		userNameInitials = `${users[0]?.firstname
 			.charAt(0)
 			.toUpperCase()} ${users[0]?.lastname?.charAt(0).toUpperCase()}`;
+	}
+
+	for (const user of users ?? []) {
+		if (onlineUsers?.includes(user.id)) {
+			isUserOnline = true;
+			break;
+		}
 	}
 
 	const fileInputRef = useRef(null);
@@ -45,6 +57,10 @@ function Messages() {
 	// Get Messages history on component mount
 	useEffect(() => {
 		getMessageHistory(conversationId);
+
+		// Subscribe and unsubscribe to messages
+		subscribeToMessages();
+		return () => unsubscribeFromMessages();
 	}, [selectedUser]);
 
 	function handleSendMessage(event) {
@@ -91,7 +107,7 @@ function Messages() {
 	}
 
 	function getMessageDay(createdAt) {
-		if(!createdAt){
+		if (!createdAt) {
 			return null;
 		}
 		const createdDate = new Date(createdAt);
@@ -142,7 +158,11 @@ function Messages() {
 									</div>
 								</div>
 							) : users[0]?.avatar ? (
-								<div className="avatar avatar-online">
+								<div
+									className={`avatar ${
+										isUserOnline && "avatar-online"
+									}`}
+								>
 									<div className="size-12 rounded-full">
 										<img
 											src={
@@ -218,21 +238,9 @@ function Messages() {
 										? authUser?.avatar
 										: message?.User?.avatar;
 
-								const timestamp =
-									messageType === "outgoing"
-										? new Date().toLocaleTimeString(
-												"en-IN",
-												{
-													hour: "2-digit",
-													minute: "2-digit",
-												}
-										  )
-										: new Date(
-												message?.createdAt
-										  ).toLocaleTimeString("en-IN", {
-												hour: "2-digit",
-												minute: "2-digit",
-										  });
+								const timestamp = new Date(message?.createdAt).toLocaleTimeString("en-In", {
+									hour: "numeric", minute: "numeric"
+								});
 
 								const showSeparator =
 									prevSeparatorDay ===
@@ -262,6 +270,7 @@ function Messages() {
 											ref={lastMessageRef}
 											avatar={avatar}
 											timestamp={timestamp}
+											isUserOnline={messageType === "incomming" ? onlineUsers?.includes(message?.User?.id) : true}
 											readReceipt
 										/>
 									</React.Fragment>
