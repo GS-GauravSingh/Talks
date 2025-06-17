@@ -14,16 +14,7 @@ const app = express();
 // Setting up middlewares
 app.use(
     cors({
-        origin: function (origin, callback) {
-            if (
-                !origin ||
-                environmentVariables.allowedOrigin.includes(origin)
-            ) {
-                callback(null, true);
-            } else {
-                callback(new Error("Origin not allowed by CORS"));
-            }
-        },
+        origin: environmentVariables.frontendBaseUrl,
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
         credentials: true /* this allows cookies to be sent along with the HTTP requests and response */,
     })

@@ -11,16 +11,7 @@ function registerSocketServer(httpServer) {
     // This allows real-time communication using WebSockets alongside regular HTTP requests on the same existing HTTP server.
     io = require("socket.io")(httpServer, {
         cors: {
-            origin: function (origin, callback) {
-                if (
-                    !origin ||
-                    environmentVariables.allowedOrigin.includes(origin)
-                ) {
-                    callback(null, true);
-                } else {
-                    callback(new Error("Origin not allowed by CORS"));
-                }
-            },
+            origin: environmentVariables.frontendBaseUrl,
             methods: ["GET", "POST"],
             credentials: true /* allow cookies */,
         },

@@ -5,7 +5,7 @@ require("dotenv").config({
 
 const environmentVariables = {
     PORT: process.env.PORT || "8000",
-    allowedOrigin: process.env.ALLOWED_ORIGINS?.split(",") || "*",
+    frontendBaseUrl: process.env.FRONTEND_URL || "http://localhost:5173",
     DB_USER_NAME: process.env.DB_USER_NAME,
     DB_USER_PASSWORD: process.env.DB_USER_PASSWORD,
     DB_NAME: process.env.DB_NAME,
