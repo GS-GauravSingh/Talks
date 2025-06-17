@@ -9,6 +9,6 @@ registerSocketServer(httpServer);
 // start the server and listen for incomming requests.
 httpServer.listen(environmentVariables.PORT, () => {
     console.log(
-        `Server started at http://localhost:${environmentVariables.PORT}`
+        `Server running on PORT: ${environmentVariables.PORT}`
     );
 });
