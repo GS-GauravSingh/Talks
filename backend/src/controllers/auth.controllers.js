@@ -289,7 +289,15 @@ module.exports.verifyOTP = async (req, res, next) => {
         res.cookie("jwt", token, {
             maxAge: 7 * 24 * 60 * 60 * 1000, // maxAge defines Cookie Lifespan before it expires. After 7 days (7 * 24 * 60 * 60 * 1000 in Milliseconds), the cookie is automatically deleted.
             httpOnly: true, // Prevents client-side JavaScript from accessing the cookie.
-            sameSite: "strict", // cookies are only sent for same-site requests.
+
+            // sameSite: "None", allows cookies to be sent to cross-site requests, which is necessary for cross-origin requests (e.g., from frontend to backend). Note: `sameSite: "None"` requires the `secure` flag to be set to true in production environments.
+            // sameSite: "Strict", allows cookies to be sent in same-site requests only, which is more secure but may not work for cross-origin requests.
+            // For development, we can use `sameSite: "Strict"` to avoid issues with same-origin requests because there `https` protocol is not used in development.
+            sameSite:
+                environmentVariables.NODE_ENV !== "development"
+                    ? "None"
+                    : "Strict",
+
             secure: environmentVariables.NODE_ENV !== "development", // Ensures cookies are sent only over HTTPS.
         });
 
@@ -502,7 +510,15 @@ module.exports.login = async (req, res, next) => {
         res.cookie("jwt", token, {
             maxAge: 7 * 24 * 60 * 60 * 1000, // maxAge defines Cookie Lifespan before it expires. After 7 days (7 * 24 * 60 * 60 * 1000 in Milliseconds), the cookie is automatically deleted.
             httpOnly: true, // Prevents client-side JavaScript from accessing the cookie.
-            sameSite: "strict", // cookies are only sent for same-site requests.
+
+            // sameSite: "None", allows cookies to be sent to cross-site requests, which is necessary for cross-origin requests (e.g., from frontend to backend). Note: `sameSite: "None"` requires the `secure` flag to be set to true in production environments.
+            // sameSite: "Strict", allows cookies to be sent in same-site requests only, which is more secure but may not work for cross-origin requests.
+            // For development, we can use `sameSite: "Strict"` to avoid issues with same-origin requests because there `https` protocol is not used in development.
+            sameSite:
+                environmentVariables.NODE_ENV !== "development"
+                    ? "None"
+                    : "Strict",
+
             secure: environmentVariables.NODE_ENV !== "development", // Ensures cookies are sent only over HTTPS.
         });
 
@@ -686,7 +702,15 @@ module.exports.googleAuthentication = async (req, res, next) => {
         res.cookie("jwt", token, {
             maxAge: 7 * 24 * 60 * 60 * 1000, // maxAge defines Cookie Lifespan before it expires. After 7 days (7 * 24 * 60 * 60 * 1000 in Milliseconds), the cookie is automatically deleted.
             httpOnly: true, // Prevents client-side JavaScript from accessing the cookie.
-            sameSite: "strict", // cookies are only sent for same-site requests.
+
+            // sameSite: "None", allows cookies to be sent to cross-site requests, which is necessary for cross-origin requests (e.g., from frontend to backend). Note: `sameSite: "None"` requires the `secure` flag to be set to true in production environments.
+            // sameSite: "Strict", allows cookies to be sent in same-site requests only, which is more secure but may not work for cross-origin requests.
+            // For development, we can use `sameSite: "Strict"` to avoid issues with same-origin requests because there `https` protocol is not used in development.
+            sameSite:
+                environmentVariables.NODE_ENV !== "development"
+                    ? "None"
+                    : "Strict",
+
             secure: environmentVariables.NODE_ENV !== "development", // Ensures cookies are sent only over HTTPS.
         });
 
