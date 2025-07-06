@@ -130,9 +130,6 @@ const useChatStore = create((set, get) => ({
 				}
 			);
 
-			set({
-				messages: [...get().messages, response.data?.result?.messages],
-			});
 			console.log(response);
 		} catch (error) {
 			console.error(
